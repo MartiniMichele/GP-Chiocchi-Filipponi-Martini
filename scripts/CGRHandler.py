@@ -16,7 +16,7 @@ class CGRHandler:
     def read_files(self):
 
         # Folder Path
-        path = "C:/Users/Michele/Documents/GitHub/GP-Chiocchi-Filipponi-Martini/Fasta_5S"
+        path = "C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/Fasta_5S"
         counter = 1
 
         # Change the directory
