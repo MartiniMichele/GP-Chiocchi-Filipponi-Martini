@@ -10,7 +10,7 @@ x = []
 y = []
 data_folder = "C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/Dataset/"
 classes = os.listdir(data_folder)
-for c in range(len(classes)):
+for c in range(2):#len(classes)):
     class_folder = os.path.join(data_folder, classes[c])
     print("class_folder = ", class_folder)
     for img_file in os.listdir(data_folder):
@@ -23,8 +23,8 @@ y = np.array(y)
 
 
 # Split data into training, validation, and test sets
-x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.1)
-x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
+x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.1, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=0)
 
 # Preprocess the data
 x_train = x_train.astype("float32") / 255.0
@@ -49,7 +49,7 @@ model.add(keras.layers.Dense(len(classes), activation="softmax"))
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
 # Train the model
-history = model.fit(x_train, y_train, epochs=2, validation_data=(x_val, y_val))
+history = model.fit(x_train, y_train, epochs=4, validation_data=(x_val, y_val))
 
 # Evaluate the model on the test data
 test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0)
