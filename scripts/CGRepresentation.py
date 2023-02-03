@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+from pathlib import Path
 
 
 class CGR:
@@ -81,5 +83,9 @@ class CGR:
         r = CGR.representation(self)
         fig = plt.figure(figsize=(6, 6))
         plt.scatter(r[:, 0], r[:, 1])
-        plt.savefig("C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/UpdatedDataset/CGR_RNA" + str(counter) + ".png")
+
+        source_path = Path(__file__).resolve()
+        source_dir = source_path.parent
+        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/UpdatedDataset/CGR_RNA" + str(counter) + ".png"
+        plt.savefig(path)
         plt.show()
