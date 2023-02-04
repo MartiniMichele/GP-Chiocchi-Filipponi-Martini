@@ -1,5 +1,6 @@
 import CGRepresentation
 import os
+from pathlib import Path
 from Bio import AlignIO
 from Bio.Seq import MutableSeq
 
@@ -16,7 +17,9 @@ class CGRHandler:
     def read_files(self):
 
         # Folder Path
-        path = "C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/Fasta_5S/New_Directory"
+        source_path = Path(__file__).resolve()
+        source_dir = source_path.parent
+        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_5S/New_Directory"
         counter = 1
 
         # Change the directory
