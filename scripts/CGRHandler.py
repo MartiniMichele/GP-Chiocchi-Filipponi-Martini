@@ -13,7 +13,6 @@ class CGRHandler:
         self.rna_2structure = rna_2structure
         self.sequence = None
 
-
     def read_files(self):
 
         # Folder Path
@@ -27,7 +26,7 @@ class CGRHandler:
 
         # Read text File
 
-        def read_text_file(file_path):
+        def read_fasta_file(file_path):
             with open(file_path, 'r') as f:
                 alignment = AlignIO.read(f, 'fasta')
                 seq = [record.seq for record in alignment]
@@ -40,7 +39,7 @@ class CGRHandler:
                 file_path = f"{path}\{file}"
 
                 # call read text file function
-                read_text_file(file_path)
+                read_fasta_file(file_path)
                 print(file_path)
                 self.generate_dataset(counter)
                 counter += 1

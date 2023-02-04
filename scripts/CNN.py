@@ -10,40 +10,50 @@ import random
 import glob
 import matplotlib.pyplot as plt
 import warnings
-
+import pandas as pd
 
 # organize data into train, validation and test directories
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Dataset/NCBI"
+data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/"
+train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/train/"
+valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/valid/"
+test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/test/"
+
+'''
+# TODO: eliminare dopo aver spostato i file
+png_path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/"
+filelist = os.listdir(png_path)
+sub_dir_path = []
+
+for x in filelist:
+    sub_dir_path.append(png_path + x + '/')
+print(sub_dir_path)
+
+for i in sub_dir_path:
+    filelist2 = os.listdir(i)
+    for j in filelist2:
+        if j.endswith('.png'):
+            # file = pd.read_csv(i+j, sep = ',', header = [0])
+            file_path = i + j
+            new_file_path = png_path
+            shutil.copy2(file_path, new_file_path)
+'''
 
 os.chdir(data_dir)
-if os.path.isdir('train/prova') is False:
-    os.makedirs('train/prova')
-    os.makedirs('train/prova2')
-    os.makedirs('valid/prova')
-    os.makedirs('valid/prova2')
-    os.makedirs('test/prova')
-    os.makedirs('test/prova2')
-'''
-    for i in random.sample(glob.glob('cat*'), 500):
-        shutil.move(i, 'train/cat')
-    for i in random.sample(glob.glob('dog*'), 500):
-        shutil.move(i, 'train/dog')
-    for i in random.sample(glob.glob('cat*'), 100):
-        shutil.move(i, 'valid/cat')
-    for i in random.sample(glob.glob('dog*'), 100):
-        shutil.move(i, 'valid/dog')
-    for i in random.sample(glob.glob('cat*'), 50):
-        shutil.move(i, 'test/cat')
-    for i in random.sample(glob.glob('dog*'), 50):
-        shutil.move(i, 'test/dog')
+if os.path.isdir('train/') is False:
+    os.makedirs('train/')
+    os.makedirs('valid/')
+    os.makedirs('test/')
+
+    for i in random.sample(glob.glob('*.png'), 427):
+        shutil.move(i, train_dir)
+    for i in random.sample(glob.glob('*.png'), 122):
+        shutil.move(i, valid_dir)
+    for i in random.sample(glob.glob('*.png'), 61):
+        shutil.move(i, test_dir)
 
 os.chdir('../../')
-'''
-
-
-
 
 
 '''
@@ -104,4 +114,3 @@ history = model.fit(x_train, y_train, epochs=20, validation_data=(x_val, y_val))
 test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0)
 print("Test accuracy:", test_acc)
 '''
-
