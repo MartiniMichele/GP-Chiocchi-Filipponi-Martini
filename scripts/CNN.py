@@ -1,6 +1,11 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+from keras.models import Sequential
+from keras.layers import Activation, Dense, Flatten, BatchNormalization, Conv2D, MaxPool2D
+from keras.optimizers import Adam
+from keras.metrics import categorical_crossentropy
+from keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import confusion_matrix
 import itertools
 import os
@@ -10,7 +15,8 @@ import random
 import glob
 import matplotlib.pyplot as plt
 import warnings
-import pandas as pd
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # organize data into train, validation and test directories
 source_path = Path(__file__).resolve()
@@ -53,8 +59,87 @@ if os.path.isdir('train/') is False:
     for i in random.sample(glob.glob('*.png'), 61):
         shutil.move(i, test_dir)
 
-os.chdir('../../')
+# TODO: decidere se lasciare o eliminare (il metodo crea dinamicamente le cartelle per i file presenti nella cartella)
+png_path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/train"
+os.chdir(png_path)
+phylum_list = set()
 
+for file in os.listdir():
+    if file.endswith('.png'):
+        phylum = file.split('_')[0]
+        phylum_list.add(str(phylum))
+    phylum_list.add(file)
+
+#for item in phylum_list:
+#    os.makedirs(item)
+
+for file in os.listdir():
+    if file.endswith('.png'):
+        filename = file.split('_')[0]
+        dir_path = png_path + "/" + filename
+        shutil.move(file, dir_path)
+
+os.chdir('../../')
+print("phylums:---------------------" + str(phylum_list))
+print("phylums lenght:---------------------" + str(len(phylum_list)))
+
+'''
+phylums = ['Acidobacteria', 'Actinobacteria', 'Annelida', 'Apicomplexa', 'Aquificae', 'Arthropoda', 'Ascomycota',
+          'Bacteroidetes', 'Basidiomycota', 'Brachiopoda', 'Bryozoa', 'Chlamydiae', 'Chlorobi', 'Chloroflexi',
+          'Chlorophyta', 'Chordata', 'Ciliophora', 'Cnidaria', 'Crenarchaeota', 'Cryptophyta', 'Cyanobacteria',
+          'Deinococcus-Thermus', 'Echinodermata', 'Euglenida', 'Euryarchaeota', 'Firmicutes', 'Hemichordata',
+          'Mollusca', 'Mucoromycota', 'Nematoda', 'Nemertea', 'Placozoa', 'Placozoa', 'Platyhelminthes', 'Porifera',
+          'Proteobacteria', 'Rhodophyta', 'Rotifera', 'Spirochaetes', 'Streptophyta', 'Tenericutes', 'Thermotogae',
+          'Verrucomicrobia', 'Zoopagomycota']
+'''
+
+train_batches = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input) \
+    .flow_from_directory(directory=train_dir, target_size=(600, 600),
+                         classes=phylum_list, batch_size=2)
+valid_batches = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input) \
+    .flow_from_directory(directory=valid_dir, target_size=(600, 600),
+                         classes=phylum_list, batch_size=2)
+test_batches = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input) \
+    .flow_from_directory(directory=test_dir, target_size=(600, 600), classes=phylum_list,
+                         batch_size=2, shuffle=False)
+
+imgs, labels = next(train_batches)
+
+
+def plotImages(images_arr):
+    fig, axes = plt.subplots(1, 10, figsize=(20, 20))
+    axes = axes.flatten()
+    for img, ax in zip(images_arr, axes):
+        ax.imshow(img)
+        ax.axis('off')
+    plt.tight_layout()
+    plt.show()
+
+
+plotImages(imgs)
+print(labels)
+
+model = Sequential([
+    Conv2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(600, 600, 3)),
+    MaxPool2D(pool_size=(2, 2), strides=2),
+    Conv2D(filters=64, kernel_size=(3, 3), activation='relu', padding='same'),
+    MaxPool2D(pool_size=(2, 2), strides=2),
+    Conv2D(filters=128, kernel_size=(3, 3), activation='relu', padding='same'),
+    Flatten(),
+    Dense(units=len(phylum_list), activation='softmax')
+])
+
+model.summary()
+
+model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+
+model.fit(x=train_batches,
+          steps_per_epoch=len(train_batches) / 2,
+          validation_data=valid_batches,
+          validation_steps=len(valid_batches) / 2,
+          epochs=20,
+          verbose=2
+          )
 
 '''
 import numpy as np
