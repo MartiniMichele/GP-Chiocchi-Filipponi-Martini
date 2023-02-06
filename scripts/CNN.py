@@ -2,7 +2,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from keras.models import Sequential
-from keras.layers import Activation, Dense, Flatten, BatchNormalization, Conv2D, MaxPool2D
+from keras.layers import Activation, Dense, Flatten, BatchNormalization, Conv2D, MaxPool2D, Dropout
+from keras import regularizers, layers
 from keras.optimizers import Adam
 from keras.metrics import categorical_crossentropy
 from keras.preprocessing.image import ImageDataGenerator
@@ -21,29 +22,30 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 # organize data into train, validation and test directories
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/"
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/train/"
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/valid/"
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/test/"
+data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/cnn_files/Superkingdom_ENA_5S/dataset/"
+train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/cnn_files/Superkingdom_ENA_5S/dataset/train/"
+valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/cnn_files/Superkingdom_ENA_5S/dataset/valid/"
+test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/cnn_files/Superkingdom_ENA_5S/dataset/test/"
 
-'''
 # TODO: eliminare dopo aver spostato i file
-png_path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/"
+'''
+png_path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/cnn_files/Superkingdom_ENA_5S/"
 filelist = os.listdir(png_path)
 sub_dir_path = []
 
 for x in filelist:
     sub_dir_path.append(png_path + x + '/')
-print(sub_dir_path)
+print("subdir:" + str(sub_dir_path))
 
 for i in sub_dir_path:
     filelist2 = os.listdir(i)
     for j in filelist2:
         if j.endswith('.png'):
-            # file = pd.read_csv(i+j, sep = ',', header = [0])
+            #file = pd.read_csv(i+j, sep = ',', header = [0])
             file_path = i + j
             new_file_path = png_path
             shutil.copy2(file_path, new_file_path)
+
 '''
 
 os.chdir(data_dir)
@@ -52,16 +54,15 @@ if os.path.isdir('train/') is False:
     os.makedirs('valid/')
     os.makedirs('test/')
 
-    for i in random.sample(glob.glob('*.png'), 427):
+    for i in random.sample(glob.glob('*.png'), 448):
         shutil.move(i, train_dir)
-    for i in random.sample(glob.glob('*.png'), 122):
+    for i in random.sample(glob.glob('*.png'), 127):
         shutil.move(i, valid_dir)
-    for i in random.sample(glob.glob('*.png'), 61):
+    for i in random.sample(glob.glob('*.png'), 63):
         shutil.move(i, test_dir)
 
 # TODO: decidere se lasciare o eliminare (il metodo crea dinamicamente le cartelle per i file presenti nella cartella)
-png_path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/Only_PNG/train"
-os.chdir(png_path)
+os.chdir(train_dir)
 phylum_list = set()
 
 for file in os.listdir():
@@ -70,38 +71,29 @@ for file in os.listdir():
         phylum_list.add(str(phylum))
     phylum_list.add(file)
 
-#for item in phylum_list:
-#    os.makedirs(item)
-
+if os.path.isdir('Archaea/') is False:
+    for item in phylum_list:
+        os.makedirs(item)
+'''
 for file in os.listdir():
     if file.endswith('.png'):
         filename = file.split('_')[0]
-        dir_path = png_path + "/" + filename
+        dir_path = train_dir + filename
         shutil.move(file, dir_path)
-
-os.chdir('../../')
+'''
 print("phylums:---------------------" + str(phylum_list))
 print("phylums lenght:---------------------" + str(len(phylum_list)))
 
-'''
-phylums = ['Acidobacteria', 'Actinobacteria', 'Annelida', 'Apicomplexa', 'Aquificae', 'Arthropoda', 'Ascomycota',
-          'Bacteroidetes', 'Basidiomycota', 'Brachiopoda', 'Bryozoa', 'Chlamydiae', 'Chlorobi', 'Chloroflexi',
-          'Chlorophyta', 'Chordata', 'Ciliophora', 'Cnidaria', 'Crenarchaeota', 'Cryptophyta', 'Cyanobacteria',
-          'Deinococcus-Thermus', 'Echinodermata', 'Euglenida', 'Euryarchaeota', 'Firmicutes', 'Hemichordata',
-          'Mollusca', 'Mucoromycota', 'Nematoda', 'Nemertea', 'Placozoa', 'Placozoa', 'Platyhelminthes', 'Porifera',
-          'Proteobacteria', 'Rhodophyta', 'Rotifera', 'Spirochaetes', 'Streptophyta', 'Tenericutes', 'Thermotogae',
-          'Verrucomicrobia', 'Zoopagomycota']
-'''
 
 train_batches = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input) \
     .flow_from_directory(directory=train_dir, target_size=(600, 600),
-                         classes=phylum_list, batch_size=2)
+                         classes=phylum_list, batch_size=20)
 valid_batches = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input) \
     .flow_from_directory(directory=valid_dir, target_size=(600, 600),
-                         classes=phylum_list, batch_size=2)
+                         classes=phylum_list, batch_size=20)
 test_batches = ImageDataGenerator(preprocessing_function=tf.keras.applications.vgg16.preprocess_input) \
     .flow_from_directory(directory=test_dir, target_size=(600, 600), classes=phylum_list,
-                         batch_size=2, shuffle=False)
+                         batch_size=20, shuffle=False)
 
 imgs, labels = next(train_batches)
 
@@ -115,31 +107,96 @@ def plotImages(images_arr):
     plt.tight_layout()
     plt.show()
 
+#plotImages(imgs)
+#print(labels)
 
-plotImages(imgs)
-print(labels)
+# TODO: DATA AUGMENTATION
+'''
+gen = ImageDataGenerator(rotation_range=10, width_shift_range=0.1, height_shift_range=0.1, shear_range=0.15,
+                         zoom_range=0.1, channel_shift_range=10., horizontal_flip=True)
+
+for file in os.listdir():
+    if file.endswith('.png'):
+        pass
+    png_path = train_dir + file
+    chosen_image_path = random.choice(os.listdir(png_path))
+    image = np.expand_dims(plt.imread(os.path.join(png_path, chosen_image_path)), 0)
+    plt.imshow(image[0])
+    aug_iter = gen.flow(image)
+    aug_images = [next(aug_iter)[0].astype(np.uint8) for i in range(10)]
+    plotImages(aug_images)
+    gen.flow(image, save_to_dir=png_path, save_prefix='augimage-', save_format='png')
+'''
+
+data_augmentation = tf.keras.Sequential([
+  layers.RandomFlip("horizontal_and_vertical"),
+  layers.RandomRotation(0.2),
+])
+resize_and_rescale = tf.keras.Sequential([
+  layers.Resizing(600, 600),
+  layers.Rescaling(1./255)
+])
 
 model = Sequential([
-    Conv2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(600, 600, 3)),
+    #resize_and_rescale,
+    #data_augmentation,
+    Conv2D(filters=16, kernel_regularizer=regularizers.L2(0.001), kernel_size=(3, 3), activation='relu', padding='same', input_shape=(600, 600, 3)),
+    Dropout(0.5),
     MaxPool2D(pool_size=(2, 2), strides=2),
-    Conv2D(filters=64, kernel_size=(3, 3), activation='relu', padding='same'),
-    MaxPool2D(pool_size=(2, 2), strides=2),
-    Conv2D(filters=128, kernel_size=(3, 3), activation='relu', padding='same'),
+    Dropout(0.5),
+    Dropout(0.5),
     Flatten(),
     Dense(units=len(phylum_list), activation='softmax')
 ])
 
 model.summary()
 
-model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy', 'AUC'])
+
+print(str(train_batches.samples))
+print(str(train_batches.batch_size))
+print(str(int(round(train_batches.samples / train_batches.batch_size))))
 
 model.fit(x=train_batches,
-          steps_per_epoch=len(train_batches) / 2,
+          steps_per_epoch=int(round(train_batches.samples / train_batches.batch_size)),
           validation_data=valid_batches,
-          validation_steps=len(valid_batches) / 2,
-          epochs=20,
-          verbose=2
+          validation_steps=int(round(valid_batches.samples / valid_batches.batch_size)),
+          epochs=50,
+          verbose=1
           )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 '''
 import numpy as np
