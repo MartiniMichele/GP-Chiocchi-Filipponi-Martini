@@ -5,7 +5,7 @@ from pathlib import Path
 
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_5S/Results/result.xlsx"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/fwd5s/risultato.xlsx"
 
 # Caricamento del file result.xlsx
 df = pd.read_excel(path)
@@ -25,7 +25,7 @@ for filename in os.listdir(path_fasta_folder):
         if "|" in fasta_string:
             target_string = fasta_string.split(">")[1].split("|")[0]
             if target_string in df["bpRNA ID"].values:
-                new_directory = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_5S/New_Directory/"
+                new_directory = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_5S/New_Directory2/"
                 new_file_path = os.path.join(new_directory, filename)
                 shutil.copy2(file_path, new_file_path)
         # altrimenti è un file fasta del database RFAM, quindi prendo la stringa, verifico se la stringa è presente nella colonna
@@ -33,7 +33,7 @@ for filename in os.listdir(path_fasta_folder):
         else:
             target_string = fasta_string.split(">")[1].split("\n")[0]
             if target_string in df["Reference Name"].values:
-                new_directory = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_5S/New_Directory/"
+                new_directory = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_5S/New_Directory2/"
                 new_file_path = os.path.join(new_directory, filename)
                 shutil.copy2(file_path, new_file_path)
 

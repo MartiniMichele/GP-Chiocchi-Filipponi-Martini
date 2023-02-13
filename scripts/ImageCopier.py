@@ -1,5 +1,4 @@
 import shutil
-import os
 import re
 import pandas as pd
 import os
@@ -17,6 +16,11 @@ path_NCBI_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/fwd5
 path_NCBI_destination = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_NCBI_5S/"
 path_SILVA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/fwd5s/SILVA_5S.csv"
 path_SILVA_destination = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_SILVA_5S/"
+
+path_ENA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Superkingdom_ENA_5S/"
+path_GTDB_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Superkingdom_GTDB_5S/"
+path_NCBI_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Superkingdom_NCBI_5S/"
+path_SILVA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Superkingdom_SILVA_5S/"
 
 df = pd.read_excel(path)
 
@@ -59,3 +63,15 @@ copy_image(path_NCBI_origin, path_NCBI_destination
 
 copy_image(path_SILVA_origin, path_SILVA_destination
            , 'Benchmark ID', 'Taxonomy.SILVA.phylum')
+
+copy_image(path_ENA_origin, path_ENA_superkingdom
+           , 'Benchmark ID', 'Taxonomy.ENA.superkingdom')
+
+copy_image(path_GTDB_origin, path_GTDB_superkingdom
+           , 'Benchmark ID', 'Taxonomy.GTDB.domain')
+
+copy_image(path_NCBI_origin, path_NCBI_superkingdom
+           , 'Benchmark ID', 'Taxonomy.NCBI.superkingdom')
+
+copy_image(path_SILVA_origin, path_SILVA_superkingdom
+           , 'Benchmark ID', 'Taxonomy.SILVA.superkingdom')
