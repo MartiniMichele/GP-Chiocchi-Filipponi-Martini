@@ -5,17 +5,29 @@ from pathlib import Path
 
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/fwd5s/risultato.xlsx"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/join2.xlsx"
+path_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_tRNA_nH/"
+path_new_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_updated/"
 
-# Caricamento del file result.xlsx
 df = pd.read_excel(path)
 
-path_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_5S/"
-# Itero attraverso tutti i file fasta nella cartella Fasta_5S
+benchmark_id_xlsx = 'Benchmark ID'
+molecule_id = set(df[benchmark_id_xlsx] + '_nH')
+
+for file_fasta in os.listdir(path_fasta_folder):
+    filename = os.path.splitext(file_fasta)[0].replace('_nH.fasta', '')
+    if filename in molecule_id:
+        if not os.path.exists(path_new_fasta_folder):
+            os.makedirs(path_new_fasta_folder)
+        shutil.copy2(os.path.join(path_fasta_folder, file_fasta), os.path.join(path_new_fasta_folder, file_fasta))
+
+
+
+''''
+# Itero attraverso tutti i file fasta nella cartella Fasta_tRNA_nH
 for filename in os.listdir(path_fasta_folder):
     if filename.endswith(".fasta"):
         file_path = os.path.join(path_fasta_folder, filename)
-
     # Apro il file fasta ed estraggo la stringa iniziale
     with open(file_path, "r") as f:
         fasta_string = f.readline().strip()
@@ -37,4 +49,4 @@ for filename in os.listdir(path_fasta_folder):
                 new_file_path = os.path.join(new_directory, filename)
                 shutil.copy2(file_path, new_file_path)
 
-
+'''

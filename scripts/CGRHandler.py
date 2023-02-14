@@ -1,7 +1,6 @@
 import CGRepresentation
 import os
 from pathlib import Path
-from Bio import AlignIO
 from Bio.Seq import MutableSeq
 
 
@@ -18,7 +17,7 @@ class CGRHandler:
         # Folder Path
         source_path = Path(__file__).resolve()
         source_dir = source_path.parent
-        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_5S/New_Directory"
+        path = os.path.abspath(os.path.join(source_dir, os.pardir)) +  "/Fasta_tRNA_nH/Fasta_updated"
         counter = 1
 
         # Change the directory
@@ -28,9 +27,9 @@ class CGRHandler:
 
         def read_fasta_file(file_path):
             with open(file_path, 'r') as f:
-                alignment = AlignIO.read(f, 'fasta')
-                seq = [record.seq for record in alignment]
-                self.sequence = seq
+                line = f.readline()
+                self.sequence = line.replace("\n", "")
+
 
         # iterate through all file
         for file in os.listdir():
@@ -46,10 +45,10 @@ class CGRHandler:
 
     def filter_sequence(self, sequence):
 
-        filtered_sequence = MutableSeq(str(sequence[0]))
-        chars = ["Y", "N", "R", "M", "S", "W", "K"]
+        filtered_sequence = MutableSeq(str(sequence))
+        chars = ["Y", "N", "R", "M", "S", "W", "K", "D", "V", "B", "H"]
 
-        if any(x in sequence[0] for x in chars):
+        if any(x in sequence for x in chars):
 
             char_count = self.count_char(sequence)
 
@@ -73,6 +72,18 @@ class CGRHandler:
                 elif filtered_sequence.find("W") != -1:
                     filtered_sequence = filtered_sequence.replace("W", "")
 
+                elif filtered_sequence.find("D") != -1:
+                    filtered_sequence = filtered_sequence.replace("D", "")
+
+                elif filtered_sequence.find("B") != -1:
+                    filtered_sequence = filtered_sequence.replace("B", "")
+
+                elif filtered_sequence.find("H") != -1:
+                    filtered_sequence = filtered_sequence.replace("H", "")
+
+                elif filtered_sequence.find("V") != -1:
+                    filtered_sequence = filtered_sequence.replace("V", "")
+
                 elif filtered_sequence.find("K") != -1:
                     filtered_sequence = filtered_sequence.replace("K", "")
 
@@ -82,7 +93,7 @@ class CGRHandler:
         return filtered_sequence
 
     def count_char(self, sequence):
-        tmp_sequence = MutableSeq(sequence[0])
+        tmp_sequence = MutableSeq(sequence)
         char_count = 0
 
         char_count += tmp_sequence.count("Y")
@@ -92,6 +103,10 @@ class CGRHandler:
         char_count += tmp_sequence.count("S")
         char_count += tmp_sequence.count("W")
         char_count += tmp_sequence.count("K")
+        char_count += tmp_sequence.count("D")
+        char_count += tmp_sequence.count("H")
+        char_count += tmp_sequence.count("V")
+        char_count += tmp_sequence.count("B")
 
         return char_count
 
