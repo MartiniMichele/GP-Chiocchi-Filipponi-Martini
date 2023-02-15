@@ -1,4 +1,60 @@
-import numpy as np
+from keras import Sequential
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+from keras.optimizers import RMSprop
+from keras.preprocessing.image import ImageDataGenerator
+
+img_width, img_height = 150, 150
+train_data_dir = 'C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/cnn_files/Superkingdom_ENA_5S/dataset/train'
+validation_data_dir = 'C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/cnn_files/Superkingdom_ENA_5S/dataset/test'
+batch_size = 32
+epochs = 30
+
+model = Sequential()
+model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(img_width, img_height, 3)))
+model.add(MaxPooling2D((2, 2)))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D((2, 2)))
+model.add(Conv2D(128, (3, 3), activation='relu'))
+model.add(MaxPooling2D((2, 2)))
+model.add(Flatten())
+model.add(Dense(512, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(3, activation='softmax'))
+
+model.compile(loss='categorical_crossentropy',
+              optimizer=RMSprop(lr=1e-4),
+              metrics=['accuracy'])
+
+train_datagen = ImageDataGenerator(rescale=1./255,
+                                   shear_range=0.2,
+                                   zoom_range=0.2,
+                                   horizontal_flip=True)
+
+test_datagen = ImageDataGenerator(rescale=1./255)
+
+train_generator = train_datagen.flow_from_directory(train_data_dir,
+                                                    target_size=(img_width, img_height),
+                                                    batch_size=batch_size,
+                                                    class_mode='categorical')
+
+validation_generator = test_datagen.flow_from_directory(validation_data_dir,
+                                                        target_size=(img_width, img_height),
+                                                        batch_size=batch_size,
+                                                        class_mode='categorical')
+
+history = model.fit_generator(train_generator,
+                              steps_per_epoch=train_generator.n // batch_size,
+                              epochs=epochs,
+                              validation_data=validation_generator,
+                              validation_steps=validation_generator.n // batch_size)
+
+score = model.evaluate_generator(validation_generator, verbose=0)
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
+
+
+
+'''import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from keras.models import Sequential
@@ -28,7 +84,7 @@ valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/cnn_files/S
 test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/cnn_files/Superkingdom_ENA_5S/dataset/test/"
 
 # TODO: eliminare dopo aver spostato i file
-'''
+
 png_path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/cnn_files/Superkingdom_ENA_5S/"
 filelist = os.listdir(png_path)
 sub_dir_path = []
@@ -46,7 +102,7 @@ for i in sub_dir_path:
             new_file_path = png_path
             shutil.copy2(file_path, new_file_path)
 
-'''
+
 
 os.chdir(data_dir)
 if os.path.isdir('train/') is False:
@@ -74,13 +130,13 @@ for file in os.listdir():
 if os.path.isdir('Archaea/') is False:
     for item in phylum_list:
         os.makedirs(item)
-'''
+
 for file in os.listdir():
     if file.endswith('.png'):
         filename = file.split('_')[0]
         dir_path = train_dir + filename
         shutil.move(file, dir_path)
-'''
+
 print("phylums:---------------------" + str(phylum_list))
 print("phylums lenght:---------------------" + str(len(phylum_list)))
 
@@ -111,7 +167,7 @@ def plotImages(images_arr):
 #print(labels)
 
 # TODO: DATA AUGMENTATION
-'''
+
 gen = ImageDataGenerator(rotation_range=10, width_shift_range=0.1, height_shift_range=0.1, shear_range=0.15,
                          zoom_range=0.1, channel_shift_range=10., horizontal_flip=True)
 
@@ -126,7 +182,7 @@ for file in os.listdir():
     aug_images = [next(aug_iter)[0].astype(np.uint8) for i in range(10)]
     plotImages(aug_images)
     gen.flow(image, save_to_dir=png_path, save_prefix='augimage-', save_format='png')
-'''
+
 
 data_augmentation = tf.keras.Sequential([
   layers.RandomFlip("horizontal_and_vertical"),
@@ -164,7 +220,7 @@ model.fit(x=train_batches,
           epochs=50,
           verbose=1
           )
-
+'''
 
 
 
