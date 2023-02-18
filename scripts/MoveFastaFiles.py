@@ -5,9 +5,9 @@ from pathlib import Path
 
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/join2.xlsx"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/Results/SILVA.xlsx"
 path_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_tRNA_nH/"
-path_new_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_updated/"
+path_new_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_SILVA_tRNA/"
 
 df = pd.read_excel(path)
 

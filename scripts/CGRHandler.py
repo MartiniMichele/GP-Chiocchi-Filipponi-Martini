@@ -17,7 +17,7 @@ class CGRHandler:
         # Folder Path
         source_path = Path(__file__).resolve()
         source_dir = source_path.parent
-        path = os.path.abspath(os.path.join(source_dir, os.pardir)) +  "/Fasta_tRNA_nH/Fasta_updated"
+        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_SILVA_tRNA/"
         counter = 1
 
         # Change the directory

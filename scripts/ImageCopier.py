@@ -6,8 +6,8 @@ from pathlib import Path
 
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/join2.xlsx"
-path_images = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/UpdatedDataset2/"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/Results/SILVA.xlsx"
+path_images = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/SILVA_tRNA_Dataset/"
 path_ENA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/ResultsCSV/ENA.csv"
 #path_ENA_destination = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/"
 #path_GTDB_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/fwd5s/GTDB_5S.csv"
@@ -17,10 +17,10 @@ path_NCBI_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA
 path_SILVA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/ResultsCSV/SILVA.csv"
 #path_SILVA_destination = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_SILVA_5S/"
 
-path_ENA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_ENA_5S_updated/"
+path_ENA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_ENA_tRNA/"
 #path_GTDB_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_GTDB_5S_updated/"
-path_NCBI_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_NCBI_5S_updated/"
-path_SILVA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_SILVA_5S_updated/"
+path_NCBI_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_NCBI_tRNA/"
+path_SILVA_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_tRNA/"
 
 df = pd.read_excel(path)
 
@@ -51,7 +51,21 @@ def copy_image(csv_filepath, dest_path, benchmark_id_csv, col_phylum):
                                     f"{corresponding_row[col_phylum].values[0]}_{count}.png")
                 shutil.copy2(src, dest)
 
+copy_image(path_SILVA_origin, path_SILVA_phylum, 'Benchmark ID', 'Taxonomy.SILVA.phylum')
+
 '''
+copy_image(path_ENA_origin, path_ENA_superkingdom
+           , 'Benchmark ID', 'Taxonomy.ENA.superkingdom')
+
+copy_image(path_GTDB_origin, path_GTDB_superkingdom
+           , 'Benchmark ID', 'Taxonomy.GTDB.domain')
+
+copy_image(path_NCBI_origin, path_NCBI_superkingdom
+           , 'Benchmark ID', 'Taxonomy.NCBI.superkingdom')
+
+copy_image(path_SILVA_origin, path_SILVA_superkingdom
+           , 'Benchmark ID', 'Taxonomy.SILVA.superkingdom')
+
 copy_image(path_ENA_origin, path_ENA_destination
            , 'Benchmark ID', 'Taxonomy.ENA.phylum')
 
@@ -63,16 +77,5 @@ copy_image(path_NCBI_origin, path_NCBI_destination
 
 copy_image(path_SILVA_origin, path_SILVA_destination
            , 'Benchmark ID', 'Taxonomy.SILVA.phylum')
-           '''
-
-copy_image(path_ENA_origin, path_ENA_superkingdom
-           , 'Benchmark ID', 'Taxonomy.ENA.superkingdom')
 '''
-copy_image(path_GTDB_origin, path_GTDB_superkingdom
-           , 'Benchmark ID', 'Taxonomy.GTDB.domain')
-'''
-copy_image(path_NCBI_origin, path_NCBI_superkingdom
-           , 'Benchmark ID', 'Taxonomy.NCBI.superkingdom')
 
-copy_image(path_SILVA_origin, path_SILVA_superkingdom
-           , 'Benchmark ID', 'Taxonomy.SILVA.superkingdom')
