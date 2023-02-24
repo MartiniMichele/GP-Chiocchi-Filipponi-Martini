@@ -4,13 +4,18 @@ from pathlib import Path
 import shutil
 import random
 import glob
-import matplotlib.pyplot as plt
-import warnings
-import numpy as np
 
-# organize data into train, validation and test directories
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
+
+# cartelle relative al Superkingdom SILVA
+'''
+data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_SILVA_tRNA/"
+dataset_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/"
+train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/train/"
+valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/valid/"
+test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/test/"
+'''
 data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_tRNA/"
 dataset_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/"
 train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/train/"
@@ -21,7 +26,10 @@ test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificati
 
 filelist = os.listdir(data_dir)
 sub_dir_path = []
-
+'''
+cerca tutte le sottocartelle relative al phylum(o superkingdom) e poi itera al loro interno per spostare i file secondo
+la proporzione 70/20/10 nelle rispettive cartelle train/valid/test
+'''
 if len(os.listdir(train_dir)) == 0:
     for x in filelist:
         if x != "DATASET":
@@ -31,7 +39,6 @@ if len(os.listdir(train_dir)) == 0:
 
     for i in sub_dir_path:
         filelist2 = os.listdir(i)
-        count = 0
         train_part = math.floor(len(filelist2) * 0.7)
         valid_part = math.floor(len(filelist2) * 0.2)
         test_part = math.floor(len(filelist2) * 0.1)
