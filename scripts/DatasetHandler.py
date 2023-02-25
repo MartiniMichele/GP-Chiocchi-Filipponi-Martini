@@ -62,7 +62,6 @@ if len(os.listdir(train_dir)) == 0:
 '''
 controlla se è presente la cartella "Actinobacteria" comune a tutte e 3 le cartelle(train, valid, test) e quindi sicuramente presente
 se si va avanti e crea le sottocartelle(labels) con i nomi dei phylum presenti.
-
 Per creare le cartelle dei labels vengono letti tutti i file .png, viene estratta la prima parte del nome relativa al phylum
 e poi ci viene spostato il file
 '''

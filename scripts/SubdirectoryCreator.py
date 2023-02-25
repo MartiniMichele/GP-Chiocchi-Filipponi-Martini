@@ -14,7 +14,7 @@ path_SILVA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRN
 path_ENA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_ENA_tRNA/"
 #path_GTDB_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Superkingdom_GTDB_5S/"
 path_NCBI_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_NCBI_tRNA/"
-path_SILVA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_SILVA_tRNA/"
+path_SILVA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_SILVA_tRNA2/"
 
 #path_ENA_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/"
 #path_GTDB_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_GTDB_5S/"
@@ -44,7 +44,7 @@ def create_subdirectory(csv_filepath, dest_path, col_id_molecule, col_classifier
 #create_subdirectory(path_GTDB_origin, path_GTDB_superkingdom, 15, 18)
 #create_subdirectory(path_NCBI_origin, path_NCBI_superkingdom, 2, 3)
 #create_subdirectory(path_SILVA_origin, path_SILVA_superkingdom, 2, 3)
-create_subdirectory(path_SILVA_origin, path_SILVA_phylum, 2, 4)
+create_subdirectory(path_SILVA_origin, path_SILVA_superkingdom, 2, 3)
 '''
 # Crea, se non sono state già create, tutte le cartelle in base al nome del phylum
 create_subdirectory(path_ENA_origin, path_ENA_phylum, 15, 19)

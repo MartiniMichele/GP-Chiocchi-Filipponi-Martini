@@ -21,6 +21,7 @@ path_ENA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "
 #path_GTDB_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_GTDB_5S_updated/"
 path_NCBI_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_NCBI_tRNA/"
 path_SILVA_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_tRNA/"
+path_SILVA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_SILVA_tRNA2/"
 
 df = pd.read_excel(path)
 
@@ -51,7 +52,7 @@ def copy_image(csv_filepath, dest_path, benchmark_id_csv, col_phylum):
                                     f"{corresponding_row[col_phylum].values[0]}_{count}.png")
                 shutil.copy2(src, dest)
 
-copy_image(path_SILVA_origin, path_SILVA_phylum, 'Benchmark ID', 'Taxonomy.SILVA.phylum')
+copy_image(path_SILVA_origin, path_SILVA_superkingdom, 'Benchmark ID', 'Taxonomy.SILVA.superkingdom')
 
 '''
 copy_image(path_ENA_origin, path_ENA_superkingdom

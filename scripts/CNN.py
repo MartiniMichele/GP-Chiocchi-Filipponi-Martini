@@ -40,11 +40,8 @@ save_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/CNN_models/S
 
 '''
 crea i callback per la funzione fit, i callback implementati sono:
-
 early_stopping: ferma prematuramente il training se non ci sono progressi per un numero specifico di epoche(patience)
-
 reduce_lr: riduce il learning rate in caso di appiattimento della curva di apprendimento
-
 model_checkpoint: salva automaticamente il modello con il valore indicato migliore(monitor)
 '''
 def create_callbacks():
