@@ -16,13 +16,22 @@ train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificat
 valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/valid/"
 test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/test/"
 '''
+
+# cartelle relative al Phylum SILVA
+'''
 data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_tRNA/"
 dataset_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/"
 train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/train/"
 valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/valid/"
 test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/test/"
+'''
 
-# TODO: eliminare dopo aver spostato i file
+data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_Split_tRNA/Eukaryota/"
+dataset_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/"
+train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Eukaryota/train/"
+valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Eukaryota/valid/"
+test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Eukaryota/test/"
+
 
 filelist = os.listdir(data_dir)
 sub_dir_path = []
@@ -60,12 +69,12 @@ if len(os.listdir(train_dir)) == 0:
 
 
 '''
-controlla se è presente la cartella "Actinobacteria" comune a tutte e 3 le cartelle(train, valid, test) e quindi sicuramente presente
+controlla se è presente la cartella "Actinobacteria"(può variare) comune a tutte e 3 le cartelle(train, valid, test) e quindi sicuramente presente
 se si va avanti e crea le sottocartelle(labels) con i nomi dei phylum presenti.
 Per creare le cartelle dei labels vengono letti tutti i file .png, viene estratta la prima parte del nome relativa al phylum
 e poi ci viene spostato il file
 '''
-if os.path.isdir(os.path.abspath(os.path.join(train_dir, "Actinobacteria/"))) is False:
+if os.path.isdir(os.path.abspath(os.path.join(train_dir, "Apicomplexa/"))) is False:
     os.chdir(train_dir)
     for file in os.listdir():
         if file.endswith('.png'):
@@ -75,7 +84,7 @@ if os.path.isdir(os.path.abspath(os.path.join(train_dir, "Actinobacteria/"))) is
             dir_path = train_dir + phylum
             shutil.move(file, dir_path)
 
-if os.path.isdir(os.path.abspath(os.path.join(valid_dir, "Actinobacteria/"))) is False:
+if os.path.isdir(os.path.abspath(os.path.join(valid_dir, "Apicomplexa/"))) is False:
     os.chdir(valid_dir)
     for file in os.listdir():
         if file.endswith('.png'):
@@ -85,7 +94,7 @@ if os.path.isdir(os.path.abspath(os.path.join(valid_dir, "Actinobacteria/"))) is
             dir_path = valid_dir + phylum
             shutil.move(file, dir_path)
 
-if os.path.isdir(os.path.abspath(os.path.join(test_dir, "Actinobacteria/"))) is False:
+if os.path.isdir(os.path.abspath(os.path.join(test_dir, "Apicomplexa/"))) is False:
     os.chdir(test_dir)
     for file in os.listdir():
         if file.endswith('.png'):
