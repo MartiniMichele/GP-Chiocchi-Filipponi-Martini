@@ -11,15 +11,18 @@ from pathlib import Path
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
 img_width, img_height = 150, 150
-batch_size = 8
-epochs = 50
 
 # variabili di comodo per salvataggio modello
 database = "SILVA"
-livello = "SPLIT_PHYLUM"
+superkingdom = "BACTERIA"
+livello = "SPLIT_PHYLUM_%s" % superkingdom
 model_mk = 1
+batch_size = 32
+epochs = 30
 fl_filter = 32
+ol_units = 8
 n_dropout = 1
+n_layer = 3
 lr = 1e-4
 
 # cartelle relative al Superkingdom
@@ -40,22 +43,31 @@ test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificati
 '''
 
 data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/"
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Archaea/train/"
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Archaea/valid/"
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Archaea/test/"
-save_fig_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Grafici/train_validation/"
+train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/%s/train/" % superkingdom
+valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/%s/valid/" % superkingdom
+test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/%s/test/" % superkingdom
+models_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/CNN_models/"
+save_model_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/CNN_models/%s/" % livello
+graph_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Grafici/train_validation/"
+save_fig_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Grafici/train_validation/%s" % superkingdom
 
-model_filename = "%s_%s_model_%s_LR%s_batch%s_%sDropout(0.5)_4layer(FL=%s)_epochs(%s)" % (
+model_filename = "%s_%s_model_%s_LR%s_batch%s_%sDropout(0.5)_%slayer(FL=%s)_epochs(%s)" % (
     database, livello,
     model_mk, lr,
     batch_size,
     n_dropout,
+    n_layer,
     fl_filter,
     epochs)
 
-save_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/CNN_models/" + model_filename + ".h5"
+if os.path.isdir(save_model_dir) is False:
+    os.chdir(models_dir)
+    os.makedirs(save_model_dir)
+    print("\nCARTELLA SALVATAGGIO MODELLO CREATA")
 
-print(save_dir)
+model_save_name = os.path.abspath(os.path.join(save_model_dir, model_filename + ".h5"))
+
+print("\n" + model_save_name)
 
 '''
 crea i callback per la funzione fit, i callback implementati sono:
@@ -66,14 +78,14 @@ model_checkpoint: salva automaticamente il modello con il valore indicato miglio
 
 
 def create_callbacks():
-    early_stopping = EarlyStopping(patience=8, monitor='val_loss', verbose=1)
+    early_stopping = EarlyStopping(patience=4, monitor='val_loss', verbose=1)
 
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', min_lr=0.001,
                                   patience=5, mode='min',
                                   verbose=1)
 
     model_checkpoint = ModelCheckpoint(monitor='val_loss',
-                                       filepath=save_dir,
+                                       filepath=model_save_name,
                                        save_best_only=True,
                                        verbose=1)
     hist = History()
@@ -91,17 +103,36 @@ def create_callbacks():
 '''
 il modello della rete neurale
 '''
+last_n_filter = fl_filter
 model = Sequential()
-model.add(Conv2D(filters=fl_filter, activation='relu', kernel_size=(3, 3), input_shape=(img_width, img_height, 3)))
+for i in range(n_layer):
+    if i == 0:
+        model.add(Conv2D(filters=last_n_filter, activation='relu', kernel_size=(3, 3), input_shape=(img_width, img_height, 3)))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+    else:
+        last_n_filter = last_n_filter * 2
+        model.add(Conv2D(filters=last_n_filter, activation='relu', kernel_size=(3, 3), input_shape=(img_width, img_height, 3)))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+
+model.add(Flatten())
+model.add(Dense(units=last_n_filter * 4, activation='relu', ))
+
+for i in range(n_dropout):
+    model.add(Dropout(0.5))
+
+model.add(Dense(units=ol_units, activation='softmax'))
+'''
+model.add(Conv2D(filters=32, activation='relu', kernel_size=(3, 3), input_shape=(img_width, img_height, 3)))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(filters=fl_filter * 2, activation='relu', kernel_size=(3, 3)))
+model.add(Conv2D(filters=64, activation='relu', kernel_size=(3, 3)))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(filters=fl_filter * 4, activation='relu', kernel_size=(3, 3)))
+model.add(Conv2D(filters=128, activation='relu', kernel_size=(3, 3)))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
-model.add(Dense(units=fl_filter * 16, activation='relu', ))
+model.add(Dense(units=512, activation='relu', ))
 model.add(Dropout(0.5))
-model.add(Dense(units=2, activation='softmax'))
+model.add(Dense(units=8, activation='softmax'))
+'''
 
 model.summary()
 
@@ -134,6 +165,9 @@ history = model.fit(train_generator, steps_per_epoch=train_generator.n // batch_
                     validation_steps=validation_generator.n // batch_size,
                     callbacks=create_callbacks())
 
+'''
+variabili per la creazione dei grafici, estratte dalla storia del metodo fit
+'''
 actual_epochs = len(history.history['loss'])
 train_loss = history.history['loss']
 val_loss = history.history['val_loss']
@@ -145,22 +179,34 @@ train_recall = history.history['recall']
 val_recall = history.history['val_recall']
 train_auc = history.history['auc']
 val_auc = history.history['val_auc']
-# train_F1 = 2*(history.history['recall'] * history.history['precision']) / (history.history['recall'] + history.history['precision'])
-# val_F1 = 2*(history.history['val_recall'] * history.history['val_precision']) / (history.history['val_recall'] + history.history['val_precision'])
 xc = range(actual_epochs)
 
 
-
+'''
+Controlla se la cartella del superkingdom del modello esiste e se necessario la crea
+'''
+if os.path.isdir(save_fig_dir) is False:
+    os.chdir(graph_dir)
+    os.makedirs(superkingdom)
+    print("CARTELLA SUPERKINGDOM SALVATAGGIO GRAFICI CREATA")
+'''
+Controlla se la cartella dei grafici del modello esiste e se necessario la crea
+'''
 if os.path.isdir(os.path.abspath(os.path.join(save_fig_dir, "GRAPHS_" + model_filename))) is False:
     os.chdir(save_fig_dir)
     os.makedirs("GRAPHS_" + model_filename)
-    print("CARTELLA CREATA")
+    print("CARTELLA SALVATAGGIO GRAFICI CREATA")
 
+'''
+aggiorna la variabile del salvataggio dei grafici e si sposta in quella cartella
+'''
 save_fig_dir = os.path.abspath(os.path.abspath(os.path.join(save_fig_dir, "GRAPHS_" + model_filename)))
 os.chdir(save_fig_dir)
 
 
-
+'''
+Crea il grafico della loss per train e validation
+'''
 plt.figure()
 plt.grid()
 plt.plot(train_loss)
@@ -172,6 +218,9 @@ plt.legend(["train", "val"], loc="upper left")
 plt.savefig("LOSS_GRAPH.png")
 plt.show()
 
+'''
+Crea il grafico della accuracy per train e validation
+'''
 plt.grid()
 plt.plot(train_acc)
 plt.plot(val_acc)
@@ -182,6 +231,9 @@ plt.legend(["train", "val"], loc="upper left")
 plt.savefig("ACCURACY_GRAPH.png")
 plt.show()
 
+'''
+Crea il grafico della precision per train e validation
+'''
 plt.grid()
 plt.plot(train_precision)
 plt.plot(val_precision)
@@ -192,6 +244,9 @@ plt.legend(["train", "val"], loc="upper left")
 plt.savefig("PRECISION_GRAPH.png")
 plt.show()
 
+'''
+Crea il grafico del recall per train e validation
+'''
 plt.grid()
 plt.plot(train_recall)
 plt.plot(val_recall)
@@ -202,6 +257,9 @@ plt.legend(["train", "val"], loc="upper left")
 plt.savefig("RECALL_GRAPH.png")
 plt.show()
 
+'''
+Crea il grafico dell'AUC per train e validation
+'''
 plt.grid()
 plt.plot(train_auc)
 plt.plot(val_auc)
@@ -213,35 +271,83 @@ plt.savefig("AUC_GRAPH.png")
 plt.show()
 
 '''
-plt.plot(train_F1)
-plt.plot(val_F1)
-plt.xlabel("epoche")
-plt.ylabel("F1")
-plt.title("F1 GRAPH")
-plt.legend(["train", "val"], loc="upper left")
-plt.savefig("F1_GRAPH.png")
-plt.show()
-'''
-
-'''
 al termine del training viene chiamato il metodo evaluate sul batch di test per verificare il training della rete
 vengono stampate le metriche e viene calcolata la metrica F1
 '''
 
 score = model.evaluate(test_generator, verbose=2)
-print('\nTest LOSS: ', score[0])
-print('\nTest ACCURACY: ', score[1])
-print('\nTest PRECISION: ', score[2])
-print('\nTest RECALL: ', score[3])
-print('\nTest AUC: ', score[4])
-print('\nTest F1: ', str(2 * (score[3] * score[2]) / (score[3] + score[2])))
+
+test_loss = score[0]
+test_accuracy = score[1]
+test_precision = score[2]
+test_recall = score[3]
+test_auc = score[4]
+
+'''
+Crea il grafico della loss per il test
+'''
+plt.grid()
+plt.scatter([1], test_loss, zorder=5)
+plt.ylabel("loss")
+plt.title("LOSS GRAPH")
+plt.savefig("LOSS(test)_GRAPH.png")
+plt.show()
+
+'''
+Crea il grafico della accuracy per il test
+'''
+plt.grid()
+plt.scatter([1], test_accuracy, zorder=5)
+plt.ylabel("accuracy")
+plt.title("ACCURACY GRAPH")
+plt.savefig("ACCURACY(test)_GRAPH.png")
+plt.show()
+
+'''
+Crea il grafico della precision per il test
+'''
+plt.grid()
+plt.scatter([1], test_precision, zorder=5)
+plt.ylabel("precision")
+plt.title("PRECISION GRAPH")
+plt.savefig("PRECISION(test)_GRAPH.png")
+plt.show()
+
+'''
+Crea il grafico del recall per il test
+'''
+plt.grid()
+plt.scatter([1], test_recall, zorder=5)
+plt.ylabel("recall")
+plt.title("RECALL GRAPH")
+plt.savefig("RECALL(test)_GRAPH.png")
+plt.show()
+
+'''
+Crea il grafico dell'AUC per il test
+'''
+plt.grid()
+plt.scatter([1], test_auc, zorder=5)
+plt.ylabel("auc metric")
+plt.title("AUC GRAPH")
+plt.savefig("AUC(test)_GRAPH.png")
+plt.show()
 
 
 test_f1 = 2 * (score[3] * score[2]) / (score[3] + score[2])
-
+'''
+Crea il grafico dell'F1 per il test
+'''
 plt.grid()
 plt.scatter([1], test_f1, zorder=5)
 plt.ylabel("F1 metric")
 plt.title("F1 GRAPH")
 plt.savefig("F1(test)_GRAPH.png")
 plt.show()
+
+print('\nTest LOSS: ', str(test_loss))
+print('\nTest ACCURACY: ', str(test_accuracy))
+print('\nTest PRECISION: ', str(test_precision))
+print('\nTest RECALL: ', str(test_recall))
+print('\nTest AUC: ', str(test_auc))
+print('\nTest F1: ', str(test_f1))
