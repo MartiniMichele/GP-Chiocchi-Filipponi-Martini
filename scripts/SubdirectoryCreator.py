@@ -6,15 +6,17 @@ from pathlib import Path
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
 path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_23S/23S.xlsx"
-path_ENA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/ResultsCSV/ENA.csv"
-#path_GTDB_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/fwd5s/GTDB_5S.csv"
-path_NCBI_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/ResultsCSV/NCBI.csv"
-path_SILVA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/ResultsCSV/SILVA.csv"
+path_ENA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_07.822Z.csv"
+path_GTDB_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_46.490Z.csv"
+path_LTP_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_22.792Z.csv"
+path_NCBI_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_35.342Z.csv"
+path_SILVA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_36_56.689Z.csv"
 
-path_ENA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_ENA_tRNA/"
-#path_GTDB_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Superkingdom_GTDB_5S/"
-path_NCBI_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_NCBI_tRNA/"
-path_SILVA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_SILVA_tRNA2/"
+path_ENA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_23S/Phylum_23S_ENA/"
+path_GTDB_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_23S/Phylum_23S_GTDB/"
+path_LTP_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_23S/Phylum_23S_LTP/"
+path_NCBI_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_23S/Phylum_23S_NCBI/"
+path_SILVA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_23S/Phylum_23S_SILVA/"
 
 #path_ENA_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_ENA_5S/"
 #path_GTDB_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_GTDB_5S/"
@@ -46,13 +48,13 @@ def create_subdirectory(csv_filepath, dest_path, col_id_molecule, col_classifier
 
 
 # Crea, se non sono state già create, tutte le cartella in base al nome del superkingdom
-#create_subdirectory(path_ENA_origin, path_ENA_superkingdom, 2, 3)
-#create_subdirectory(path_GTDB_origin, path_GTDB_superkingdom, 15, 18)
-#create_subdirectory(path_NCBI_origin, path_NCBI_superkingdom, 2, 3)
-#create_subdirectory(path_SILVA_origin, path_SILVA_superkingdom, 2, 3)
-#create_subdirectory(path_SILVA_origin, path_SILVA_superkingdom, 2, 3)
+create_subdirectory(path_ENA_origin, path_ENA_superkingdom, 15, 19)
+create_subdirectory(path_GTDB_origin, path_GTDB_superkingdom, 15, 19)
+create_subdirectory(path_LTP_origin, path_LTP_superkingdom, 15, 19)
+create_subdirectory(path_NCBI_origin, path_NCBI_superkingdom, 15, 21)
+create_subdirectory(path_SILVA_origin, path_SILVA_superkingdom, 15, 24)
 #create_subdirectory(path_16S_csv, path_16S_superkingdom, 11, 1)
-create_subdirectory(path_23S_csv, path_23S_superkingdom, 11, 1)
+#create_subdirectory(path_23S_csv, path_23S_superkingdom, 11, 1)
 
 '''
 # Crea, se non sono state già create, tutte le cartelle in base al nome del phylum
