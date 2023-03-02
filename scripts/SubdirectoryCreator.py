@@ -5,7 +5,7 @@ from pathlib import Path
 
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/Results/SILVA.xlsx"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_23S/23S.xlsx"
 path_ENA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/ResultsCSV/ENA.csv"
 #path_GTDB_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/fwd5s/GTDB_5S.csv"
 path_NCBI_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/ResultsCSV/NCBI.csv"
@@ -21,6 +21,12 @@ path_SILVA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) +
 #path_NCBI_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_NCBI_5S/"
 path_SILVA_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_tRNA/"
 
+path_16S_csv= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_16S/16S.csv"
+path_16S_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_16S/"
+
+path_23S_csv= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_23S/23S.csv"
+path_23S_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_23S/"
+
 df = pd.read_excel(path)
 
 # Funzione che prende il percorso di un file csv, il path dove andare a creare le subdirectory, la colonna dell'id delle molecole
@@ -32,7 +38,7 @@ def create_subdirectory(csv_filepath, dest_path, col_id_molecule, col_classifier
         subdirectory_names = []
         for row in reader:
             if row[col_id_molecule] != '' and row[col_classifier] != '':
-                if row[col_id_molecule] in df['Benchmark ID'].values:
+                if row[col_id_molecule] in df['benchmark id'].values:
                     #print(row[col_id_molecule], row[col_classifier])
                     if row[col_classifier] not in subdirectory_names:
                         os.mkdir(os.path.join(dest_path, row[col_classifier]))
@@ -44,7 +50,10 @@ def create_subdirectory(csv_filepath, dest_path, col_id_molecule, col_classifier
 #create_subdirectory(path_GTDB_origin, path_GTDB_superkingdom, 15, 18)
 #create_subdirectory(path_NCBI_origin, path_NCBI_superkingdom, 2, 3)
 #create_subdirectory(path_SILVA_origin, path_SILVA_superkingdom, 2, 3)
-create_subdirectory(path_SILVA_origin, path_SILVA_superkingdom, 2, 3)
+#create_subdirectory(path_SILVA_origin, path_SILVA_superkingdom, 2, 3)
+#create_subdirectory(path_16S_csv, path_16S_superkingdom, 11, 1)
+create_subdirectory(path_23S_csv, path_23S_superkingdom, 11, 1)
+
 '''
 # Crea, se non sono state già create, tutte le cartelle in base al nome del phylum
 create_subdirectory(path_ENA_origin, path_ENA_phylum, 15, 19)

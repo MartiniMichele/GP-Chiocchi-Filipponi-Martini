@@ -17,7 +17,7 @@ class CGRHandler:
         # Folder Path
         source_path = Path(__file__).resolve()
         source_dir = source_path.parent
-        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_SILVA_tRNA/"
+        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_nH_23S/"
         counter = 1
 
         # Change the directory
@@ -46,7 +46,7 @@ class CGRHandler:
     def filter_sequence(self, sequence):
 
         filtered_sequence = MutableSeq(str(sequence))
-        chars = ["Y", "N", "R", "M", "S", "W", "K", "D", "V", "B", "H"]
+        chars = ["Y", "N", "R", "M", "S", "W", "K", "D", "V", "B", "H", "P", "O"]
 
         if any(x in sequence for x in chars):
 
@@ -87,6 +87,12 @@ class CGRHandler:
                 elif filtered_sequence.find("K") != -1:
                     filtered_sequence = filtered_sequence.replace("K", "")
 
+                elif filtered_sequence.find("P") != -1:
+                    filtered_sequence = filtered_sequence.replace("P", "")
+
+                elif filtered_sequence.find("O") != -1:
+                    filtered_sequence = filtered_sequence.replace("O", "")
+
                 else:
                     pass
 
@@ -107,6 +113,8 @@ class CGRHandler:
         char_count += tmp_sequence.count("H")
         char_count += tmp_sequence.count("V")
         char_count += tmp_sequence.count("B")
+        char_count += tmp_sequence.count("P")
+        char_count += tmp_sequence.count("O")
 
         return char_count
 
