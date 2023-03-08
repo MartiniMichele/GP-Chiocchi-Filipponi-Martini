@@ -1,3 +1,8 @@
+'''
+Questo script consente di contare il numero di occorrenze per un certo dato, contenuto in una colonna di un file excel.
+Salva poi il risultato in un altro file.
+'''
+
 import pandas as pd
 
 df = pd.read_excel("C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/tRNA_csv/tRNA_csv/Results/NCBI.xlsx")

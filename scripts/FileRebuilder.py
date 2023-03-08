@@ -1,7 +1,13 @@
+'''
+Questo script consente di prendere più files per un certo database, e ricostruirlo sotto forma di un unico file.
+È stato usato nell'esperimento riguardante il tRNA per ricostruire i files.
+'''
+
 import pandas as pd
 import os
 from pathlib import Path
 
+# Percorso dei files excels
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
 path_results = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/Results/GeneralFile.xlsx"

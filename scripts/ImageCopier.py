@@ -1,9 +1,15 @@
+'''
+Questo script serve per copiare le immagini presenti in un dataset in un determinato percorso, a seconda del nome
+del classificatore (in questo caso nome_superkingdom o nome_phylum).
+'''
+
 import shutil
 import re
 import pandas as pd
 import os
 from pathlib import Path
 
+# Percorsi dei files excel, del dataset e delle subdirectory.
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
 path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_23S/23S.xlsx"
@@ -31,17 +37,18 @@ df = pd.read_excel(path)
 
 image_names = os.listdir(path_images)
 
-
-# Metodo per ordinare le immagini dell'UpdatedDataset.
+# Metodo per ordinare le immagini di un determinato Dataset. La funzione, restituisce il primo numero intero
+# presente nella stringa s, permettendo quindi l'ordinamento del tipo -> CGR_RNA1, CGR_RNA2, CGR_RNA3, ...
+# invece che l'ordinamento -> CGR_RNA1, CGR_RNA10, CGR_RNA100, ...
 def sort_key(s):
     return int(re.findall(r'\d+', s)[0])
 
-
+# Elimino la stringa '.png' alla fine di ogni file del Dataset
 image_names = [file_name.replace('.png', '') for file_name in image_names]
 sorted_image_names = sorted(image_names, key=sort_key)
 
-
-def copy_image(csv_filepath, dest_path, benchmark_id_csv, col_phylum):
+# Copia immagini in un determinato percorso in base al nome del classificatore (superkingdom_class1, ..., phylum_class1, ...)
+def copy_image(csv_filepath, dest_path, benchmark_id_csv, col_classificator):
     df_csv = pd.read_csv(csv_filepath)
     count = 0
     for index, row in df.iterrows():
@@ -49,13 +56,14 @@ def copy_image(csv_filepath, dest_path, benchmark_id_csv, col_phylum):
             count = count + 1
             corresponding_row = df_csv.loc[df_csv[benchmark_id_csv] == row['benchmark id']]
             if not pd.isna(corresponding_row[benchmark_id_csv].values[0]) and not pd.isna(
-                    corresponding_row[col_phylum].values[0]):
-                print(row['benchmark id'], count, corresponding_row[col_phylum].values[0])
+                    corresponding_row[col_classificator].values[0]):
+                print(row['benchmark id'], count, corresponding_row[col_classificator].values[0])
                 src = os.path.join(path_images, f"{sorted_image_names[count - 1]}.png")
-                dest = os.path.join(dest_path, corresponding_row[col_phylum].values[0],
-                                    f"{corresponding_row[col_phylum].values[0]}_{count}.png")
+                dest = os.path.join(dest_path, corresponding_row[col_classificator].values[0],
+                                    f"{corresponding_row[col_classificator].values[0]}_{count}.png")
                 shutil.copy2(src, dest)
 
+# Chiamate per la copia di immagini
 copy_image(path_ENA_origin, path_ENA_superkingdom, 'Benchmark ID', 'Taxonomy.ENA.phylum')
 copy_image(path_GTDB_origin, path_GTDB_superkingdom, 'Benchmark ID', 'Taxonomy.GTDB.phylum')
 copy_image(path_LTP_origin, path_LTP_superkingdom, 'Benchmark ID', 'Taxonomy.LTP.phylum')

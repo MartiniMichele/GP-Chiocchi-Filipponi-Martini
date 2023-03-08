@@ -1,3 +1,9 @@
+'''
+Questo semplice script, prende un file excel, elimina i valori di una determinata colonna che sono nulli, elimina i duplicati
+e rimuove le righe i cui parametri non sono soddisfatti (length < 100 || length > 130). Salva poi il risultato su un nuovo
+file excel.
+'''
+
 import pandas as pd
 import os
 from pathlib import Path
