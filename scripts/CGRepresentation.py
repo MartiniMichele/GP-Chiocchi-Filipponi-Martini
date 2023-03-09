@@ -86,7 +86,7 @@ class CGR:
 
         source_path = Path(__file__).resolve()
         source_dir = source_path.parent
-        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_23S_Dataset/CGR_RNA" + str(counter) + ".png"
+        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_Dataset/join/CGR_RNA" + str(counter) + ".png"
         plt.savefig(path)
         plt.close(fig)
         #plt.show()

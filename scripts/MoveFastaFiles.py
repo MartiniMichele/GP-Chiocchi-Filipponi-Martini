@@ -12,16 +12,16 @@ from pathlib import Path
 # Percorsi del file excel e della cartella dei files fasta
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/tRNA_csv/tRNA_csv/Results/SILVA.xlsx"
-path_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_tRNA_nH/"
-path_new_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_tRNA_nH/Fasta_SILVA_tRNA/"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/Results_notnull_phylum/join.xlsx"
+path_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_nH_16S/"
+path_new_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_nH_16S/16S_join_phylum/"
 
 df = pd.read_excel(path)
 
 benchmark_id_xlsx = 'Benchmark ID'
 molecule_id = set(df[benchmark_id_xlsx] + '_nH')
 
-# Scorro la cartella contenente i files fasta. Per ogni elmeento prendo il nome, elimino l'estensione del file,
+# Scorro la cartella contenente i files fasta. Per ogni elemento prendo il nome, elimino l'estensione del file,
 # controllo se la nuova stringa è contenuta nel file excel confrontandola con l'id univoco delle molecole.
 # Se è presente avviene la copia dell'intero file fasta in un'altra directory, altrimenti vado a confrontare il prossimo file
 for file_fasta in os.listdir(path_fasta_folder):
