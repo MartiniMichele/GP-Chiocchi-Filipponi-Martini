@@ -17,7 +17,7 @@ class CGRHandler:
         # Folder Path
         source_path = Path(__file__).resolve()
         source_dir = source_path.parent
-        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_nH_16S/16S_join_phylum"
+        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_nH_16S/16S_join_phylum_noduplicates/"
         counter = 1
 
         # Change the directory

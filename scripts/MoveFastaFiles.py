@@ -12,9 +12,9 @@ from pathlib import Path
 # Percorsi del file excel e della cartella dei files fasta
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/Results_notnull_phylum/join.xlsx"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_csv/Results_phylum_noduplicates/join_phylum_noduplicates.xlsx"
 path_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_nH_16S/"
-path_new_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_nH_16S/16S_join_phylum/"
+path_new_fasta_folder = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Fasta_nH_16S/16S_join_phylum_noduplicates/"
 
 df = pd.read_excel(path)
 
