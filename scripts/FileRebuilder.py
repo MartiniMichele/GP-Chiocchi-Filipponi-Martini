@@ -1,6 +1,6 @@
 '''
 Questo script consente di prendere più files per un certo database, e ricostruirlo sotto forma di un unico file.
-È stato usato nell'esperimento riguardante il tRNA per ricostruire i files.
+È stato usato nell'esperimento riguardante il tRNA e per il 16S per ricostruire i files.
 '''
 
 import pandas as pd
@@ -12,52 +12,54 @@ source_path = Path(__file__).resolve()
 source_dir = source_path.parent
 
 # Nuovo file unico da generare
-path_results = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_16S_csv/Results/SILVA.csv"
+path_results = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/SILVA.xlsx"
 
-path_ena1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T08_53_53.450Z.csv"
-path_ena2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T08_54_12.291Z.csv"
-path_ena3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T08_57_58.904Z.csv"
-path_ena4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_02_42.369Z.csv"
-path_ena5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_08_15.245Z.csv"
-path_ena6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_13_35.055Z.csv"
-path_ena7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_16_09.022Z.csv"
-path_ena8 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_16_54.145Z.csv"
-path_ena9 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_17_56.461Z.csv"
+path_ena1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/ENA/2023-03-12T17_05_35.901Z.csv"
+path_ena2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/ENA/2023-03-12T17_15_43.828Z.csv"
+path_ena3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/ENA/2023-03-12T17_30_19.268Z.csv"
+path_ena4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/ENA/2023-03-12T17_40_24.743Z.csv"
+path_ena5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/ENA/2023-03-12T17_52_52.413Z.csv"
+path_ena6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/ENA/2023-03-12T18_03_13.908Z.csv"
+#path_ena7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_16_09.022Z.csv"
+#path_ena8 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_16_54.145Z.csv"
+#path_ena9 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/ENA_csv/2023-03-07T09_17_56.461Z.csv"
 
-path_gtdb1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/GTDB_csv/2023-03-07T08_59_23.909Z.csv"
-path_gtdb2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/GTDB_csv/2023-03-07T09_05_04.729Z.csv"
-path_gtdb3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/GTDB_csv/2023-03-07T09_11_09.577Z.csv"
-path_gtdb4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/GTDB_csv/2023-03-07T09_15_23.302Z.csv"
-path_gtdb5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/GTDB_csv/2023-03-07T09_16_24.989Z.csv"
-path_gtdb6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/GTDB_csv/2023-03-07T09_17_01.713Z.csv"
-path_gtdb7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/GTDB_csv/2023-03-07T09_18_04.467Z.csv"
+path_gtdb1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/GTDB/2023-03-12T17_11_32.574Z.csv"
+path_gtdb2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/GTDB/2023-03-12T17_24_12.006Z.csv"
+path_gtdb3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/GTDB/2023-03-12T17_35_15.308Z.csv"
+path_gtdb4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/GTDB/2023-03-12T17_46_28.234Z.csv"
+path_gtdb5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/GTDB/2023-03-12T17_59_21.059Z.csv"
+path_gtdb6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/GTDB/2023-03-12T18_06_33.468Z.csv"
+#path_gtdb7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/GTDB_csv/2023-03-07T09_18_04.467Z.csv"
 
-path_ltp1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T08_58_33.521Z.csv"
-path_ltp2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T09_03_33.787Z.csv"
-path_ltp3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T09_09_19.457Z.csv"
-path_ltp4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T09_14_02.691Z.csv"
-path_ltp5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T09_16_14.262Z.csv"
+path_ltp1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/LTP/2023-03-12T17_07_28.758Z.csv"
+path_ltp2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/LTP/2023-03-12T17_17_05.661Z.csv"
+path_ltp3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/LTP/2023-03-12T17_32_00.280Z.csv"
+path_ltp4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/LTP/2023-03-12T17_42_25.752Z.csv"
+path_ltp5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/LTP/2023-03-12T17_55_03.945Z.csv"
+path_ltp6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/LTP/2023-03-12T18_04_20.513Z.csv"
+
 #Ultimi due file non utilizzati percghè non contenevano la colonna del phylum
-path_ltp6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T09_16_56.540Z.csv"
-path_ltp7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T09_17_59.197Z.csv"
+#path_ltp6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T09_16_56.540Z.csv"
+#path_ltp7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/LTP_csv/2023-03-07T09_17_59.197Z.csv"
 
-path_ncbi1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T08_54_45.380Z.csv"
-path_ncbi2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T08_55_04.741Z.csv"
-path_ncbi3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T08_58_59.890Z.csv"
-path_ncbi4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_04_20.912Z.csv"
-path_ncbi5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_10_01.210Z.csv"
-path_ncbi6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_14_44.722Z.csv"
-path_ncbi7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_16_20.407Z.csv"
-path_ncbi8 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_16_59.185Z.csv"
-path_ncbi9 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_18_01.821Z.csv"
+path_ncbi1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/NCBI/2023-03-12T17_09_18.398Z.csv"
+path_ncbi2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/NCBI/2023-03-12T17_22_32.845Z.csv"
+path_ncbi3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/NCBI/2023-03-12T17_33_43.653Z.csv"
+path_ncbi4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/NCBI/2023-03-12T17_44_26.340Z.csv"
+path_ncbi5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/NCBI/2023-03-12T17_56_58.552Z.csv"
+path_ncbi6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/NCBI/2023-03-12T18_05_25.955Z.csv"
+#path_ncbi7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_16_20.407Z.csv"
+#path_ncbi8 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_16_59.185Z.csv"
+#path_ncbi9 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/NCBI_csv/2023-03-07T09_18_01.821Z.csv"
 
-path_silva1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/SILVA_csv/2023-03-07T08_57_31.605Z.csv"
-path_silva2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/SILVA_csv/2023-03-07T09_01_53.913Z.csv"
-path_silva3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/SILVA_csv/2023-03-07T09_07_32.664Z.csv"
-path_silva4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/SILVA_csv/2023-03-07T09_13_06.342Z.csv"
-path_silva5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/SILVA_csv/2023-03-07T09_16_01.710Z.csv"
-path_silva6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/SILVA_csv/2023-03-07T09_16_51.115Z.csv"
-path_silva7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/SILVA_csv/2023-03-07T09_17_52.385Z.csv"
+path_silva1 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/SILVA/2023-03-12T17_03_42.377Z.csv"
+path_silva2 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/SILVA/2023-03-12T17_14_21.842Z.csv"
+path_silva3 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/SILVA/2023-03-12T17_28_45.225Z.csv"
+path_silva4 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/SILVA/2023-03-12T17_38_23.880Z.csv"
+path_silva5 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/SILVA/2023-03-12T17_50_57.646Z.csv"
+path_silva6 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/SILVA/2023-03-12T18_02_06.501Z.csv"
+#path_silva7 = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nh_16S_csv/SILVA_csv/2023-03-07T09_17_52.385Z.csv"
 
 
 def rebuild_file(file_path, columns, df_results=None):
@@ -81,10 +83,10 @@ df_results = rebuild_file(path_silva3, columns, df_results)
 df_results = rebuild_file(path_silva4, columns, df_results)
 df_results = rebuild_file(path_silva5, columns, df_results)
 df_results = rebuild_file(path_silva6, columns, df_results)
-df_results = rebuild_file(path_silva7, columns, df_results)
+#df_results = rebuild_file(path_silva7, columns, df_results)
 #df_results = rebuild_file(path_ncbi8, columns, df_results)
 #df_results = rebuild_file(path_ncbi9, columns, df_results)
-df_results.to_csv(path_results, index=False)
+df_results.to_excel(path_results, index=False)
 '''
 df_results = rebuild_file(path_ENA, columns, df_results)
 df_results = rebuild_file(path_GTDB, columns, df_results)

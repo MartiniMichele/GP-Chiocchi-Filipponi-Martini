@@ -11,16 +11,16 @@ from pathlib import Path
 # Percorsi dei files excel
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "//16S_csv/Results_phylum_noduplicates/join_phylum_noduplicates.xlsx"
-path_ENA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_16S_csv/Results_notnull_superkingdom/ENA.csv"
-path_GTDB_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_46.490Z.csv"
-path_LTP_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_22.792Z.csv"
-path_NCBI_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_35.342Z.csv"
-path_SILVA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_36_56.689Z.csv"
-path_join_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_16S_csv/Results_notnull_phylum/join.csv"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/join_notnull_noduplicates_phylum.xlsx"
+path_ENA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/ENA.csv"
+path_GTDB_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/GTDB.csv"
+path_LTP_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/LTP.csv"
+path_NCBI_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/NCBI.csv"
+path_SILVA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/SILVA.csv"
+path_join_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/join_notnull_phylum.csv"
 
-path_join_noduplicates_origin= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_csv/Results_phylum_noduplicates/join_phylum_noduplicates.csv"
-path_join_noduplicates_phylum= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_16S_join_noduplicates"
+path_join_noduplicates_origin= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/join_notnull_noduplicates_phylum.csv"
+path_join_noduplicates_phylum= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/16S_2/Phylum_join_noduplicates/"
 
 path_ENA_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_23S/Phylum_23S_ENA/"
 path_GTDB_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_23S/Phylum_23S_GTDB/"
@@ -32,7 +32,7 @@ path_ENA_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Class
 #path_GTDB_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_GTDB_5S/"
 #path_NCBI_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classificazione/Phylum_NCBI_5S/"
 path_SILVA_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_tRNA/"
-path_join_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_16S_join/"
+path_join_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/16S_2/Phylum_join"
 
 path_16S_csv= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_16S/16S.csv"
 path_16S_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_16S/"

@@ -12,8 +12,8 @@ from pathlib import Path
 # Percorsi dei files excel, del dataset e delle subdirectory.
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "//16S_csv/Results_phylum_noduplicates/join_phylum_noduplicates.xlsx"
-path_images = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_Dataset/join/"
+path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/join_notnull_noduplicates_phylum.xlsx"
+path_images = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_Dataset/join_phylum_noduplicates/"
 
 path_ENA_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_07.822Z.csv"
 path_GTDB_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/23S_tassonomie/2023-03-02T13_37_46.490Z.csv"
@@ -35,8 +35,11 @@ path_join_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Clas
 path_23S_csv= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/nH_23S/23S.csv"
 path_23S_superkingdom = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_23S/"
 
-path_join_noduplicates_origin= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_csv/Results_phylum_noduplicates/join_phylum_noduplicates.csv"
-path_join_noduplicates_phylum= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_16S_join_noduplicates"
+path_join_noduplicates_origin= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/join_notnull_noduplicates_phylum.csv"
+path_join_noduplicates_phylum= os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/16S_2/Phylum_join_noduplicates/"
+
+path_join2_origin = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_2_csv/Results/notnull_phylum/join_notnull_phylum.csv"
+path_join2_phylum = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/16S_2/Phylum_join/"
 
 df = pd.read_excel(path)
 
@@ -68,7 +71,7 @@ def copy_image(csv_filepath, dest_path, benchmark_id_csv, col_classificator):
                                     f"{corresponding_row[col_classificator].values[0]}_{count}.png")
                 shutil.copy2(src, dest)
 
-# Chiamate per la copia di immagini
+# Chiamate per la copia d'immagini
 copy_image(path_join_noduplicates_origin, path_join_noduplicates_phylum, 'Benchmark ID', 'Taxonomy.ENA.phylum')
 #copy_image(path_GTDB_origin, path_GTDB_superkingdom, 'Benchmark ID', 'Taxonomy.GTDB.phylum')
 #copy_image(path_LTP_origin, path_LTP_superkingdom, 'Benchmark ID', 'Taxonomy.LTP.phylum')
