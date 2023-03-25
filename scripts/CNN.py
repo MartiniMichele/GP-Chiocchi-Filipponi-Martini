@@ -12,47 +12,50 @@ source_path = Path(__file__).resolve()
 source_dir = source_path.parent
 img_width, img_height = 150, 150
 
-# variabili di comodo per salvataggio modello
-database = "SILVA"
-superkingdom = "BACTERIA"
-livello = "SPLIT_PHYLUM_%s" % superkingdom
+'''
+ISTRUZIONI PER L'USO:
+- inserire il nome del database da utilizzare !!!Attenzione agli "_"!!! (NEW_16S_, NEW_tRNA_, 23S, SK_DATASET....)
+- inserire il livello, in caso non fosse presente lasciare vuoto (BACTERIA, ALLPHYLUM, SUPERKINGDOM....)
+- scegliere gli iperparametri per la rete
+- N.B. il modello viene salvato in automatico nella cartella CNN_models, questo file può pesare molto.
+  Ricordarsi di eliminarlo se non è utile
+- alla fine del processo di training vengono generati dei grafici che saranno salvati nella cartella Grafici
+- una volta finito il training sara effettuata una evaluation sul test e saranno visualizzati i risultati sulla console.
+  Verranno inoltre generati dei grafici che saranno salvati nella suddetta cartella
+'''
+# variabili di comodo per creazione e salvataggio del modello
+database = "NEW_16S_"
+livello = "ALLPHYLUM"
+completo = "%s%s" % (database, livello)
+#variabile di comodo in caso si vogliano lasciare gli stessi parametri ma ripetere il training senza riscrivere il modello salvato
 model_mk = 1
 batch_size = 32
 epochs = 30
+#numero di filtri del primo layer
 fl_filter = 32
-ol_units = 8
+#numero di unità del layer di output
+ol_units = 12
+#numero di layer di dropout(0.5)
 n_dropout = 1
+#numero di layer totali della rete
 n_layer = 3
+#learning rate
 lr = 1e-4
 
-# cartelle relative al Superkingdom
-'''
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/"
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/train/"
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/valid/"
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/test/"
-'''
+# cartelle urilizzate per l'esperimento
+data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/%s_DATASET/" % completo
+train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/%s_DATASET/train/" % completo
+valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/%s_DATASET/valid/" % completo
+test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/%s_DATASET/test/" % completo
 
-# cartelle relative al Phylum
-
-'''
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/"
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/train/"
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/valid/"
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/test/"
-'''
-
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/"
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/%s/train/" % superkingdom
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/%s/valid/" % superkingdom
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/%s/test/" % superkingdom
+root_dir = os.path.abspath(os.path.join(source_dir, os.pardir))
 models_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/CNN_models/"
 save_model_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/CNN_models/%s/" % livello
 graph_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Grafici/train_validation/"
-save_fig_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Grafici/train_validation/%s" % superkingdom
+save_fig_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Grafici/train_validation/%s" % livello
 
-model_filename = "%s_%s_model_%s_LR%s_batch%s_%sDropout(0.5)_%slayer(FL=%s)_epochs(%s)" % (
-    database, livello,
+model_filename = "%s_model_%s_LR%s_batch%s_%sDropout(0.5)_%slayer(FL=%s)_epochs(%s)" % (
+    livello,
     model_mk, lr,
     batch_size,
     n_dropout,
@@ -61,7 +64,7 @@ model_filename = "%s_%s_model_%s_LR%s_batch%s_%sDropout(0.5)_%slayer(FL=%s)_epoc
     epochs)
 
 if os.path.isdir(save_model_dir) is False:
-    os.chdir(models_dir)
+    os.chdir(root_dir)
     os.makedirs(save_model_dir)
     print("\nCARTELLA SALVATAGGIO MODELLO CREATA")
 
@@ -78,7 +81,7 @@ model_checkpoint: salva automaticamente il modello con il valore indicato miglio
 
 
 def create_callbacks():
-    early_stopping = EarlyStopping(patience=4, monitor='val_loss', verbose=1)
+    early_stopping = EarlyStopping(patience=6, monitor='val_loss', verbose=1)
 
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', min_lr=0.001,
                                   patience=5, mode='min',
@@ -121,7 +124,12 @@ for i in range(n_dropout):
     model.add(Dropout(0.5))
 
 model.add(Dense(units=ol_units, activation='softmax'))
+
+
 '''
+MODELLO FUNZIONANTE:
+
+
 model.add(Conv2D(filters=32, activation='relu', kernel_size=(3, 3), input_shape=(img_width, img_height, 3)))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Conv2D(filters=64, activation='relu', kernel_size=(3, 3)))
@@ -187,7 +195,7 @@ Controlla se la cartella del superkingdom del modello esiste e se necessario la 
 '''
 if os.path.isdir(save_fig_dir) is False:
     os.chdir(graph_dir)
-    os.makedirs(superkingdom)
+    os.makedirs(livello)
     print("CARTELLA SUPERKINGDOM SALVATAGGIO GRAFICI CREATA")
 '''
 Controlla se la cartella dei grafici del modello esiste e se necessario la crea
@@ -276,12 +284,19 @@ vengono stampate le metriche e viene calcolata la metrica F1
 '''
 
 score = model.evaluate(test_generator, verbose=2)
-
 test_loss = score[0]
 test_accuracy = score[1]
 test_precision = score[2]
 test_recall = score[3]
 test_auc = score[4]
+
+print('\nRISULTATO TEST %s (BATCH: %s, EPOCHE: %s, STRATI: %s, FIRST LAYER: %s, ) %s' % (model_mk, batch_size, actual_epochs, n_layer, fl_filter, completo))
+print('\nTest LOSS: ', str(test_loss))
+print('\nTest ACCURACY: ', str(test_accuracy))
+print('\nTest PRECISION: ', str(test_precision))
+print('\nTest RECALL: ', str(test_recall))
+print('\nTest AUC: ', str(test_auc))
+
 
 '''
 Crea il grafico della loss per il test
@@ -335,6 +350,7 @@ plt.show()
 
 
 test_f1 = 2 * (score[3] * score[2]) / (score[3] + score[2])
+print('\nTest F1: ', str(test_f1))
 '''
 Crea il grafico dell'F1 per il test
 '''
@@ -345,9 +361,4 @@ plt.title("F1 GRAPH")
 plt.savefig("F1(test)_GRAPH.png")
 plt.show()
 
-print('\nTest LOSS: ', str(test_loss))
-print('\nTest ACCURACY: ', str(test_accuracy))
-print('\nTest PRECISION: ', str(test_precision))
-print('\nTest RECALL: ', str(test_recall))
-print('\nTest AUC: ', str(test_auc))
-print('\nTest F1: ', str(test_f1))
+
