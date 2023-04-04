@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 source_path = Path(__file__).resolve()
-source_dir = source_path.parent
+source_dir = Path(source_path.parent.parent.parent)
 img_width, img_height = 150, 150
 
 '''
@@ -43,16 +43,15 @@ n_layer = 3
 lr = 1e-4
 
 # cartelle urilizzate per l'esperimento
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/%s_DATASET/" % completo
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/%s_DATASET/train/" % completo
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/%s_DATASET/valid/" % completo
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/%s_DATASET/test/" % completo
+data_dir = Path(str(source_dir) + "/Classification/%s_DATASET/" % completo)
+train_dir = Path(str(source_dir) + "/Classification/%s_DATASET/train/" % completo)
+valid_dir = Path(str(source_dir) + "/Classification/%s_DATASET/valid/" % completo)
+test_dir = Path(str(source_dir) + "/Classification/%s_DATASET/test/" % completo)
 
-root_dir = os.path.abspath(os.path.join(source_dir, os.pardir))
-models_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/CNN_models/"
-save_model_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/CNN_models/%s/" % livello
-graph_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Grafici/train_validation/"
-save_fig_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Grafici/train_validation/%s" % livello
+models_dir = Path(str(source_dir) + "/CNN_models/")
+save_model_dir = Path(str(source_dir) + "/CNN_models/%s/" % livello)
+graph_dir = Path(str(source_dir) + "/Grafici/")
+save_fig_dir = Path(str(source_dir) + "/Grafici/%s" % livello)
 
 model_filename = "%s_model_%s_LR%s_batch%s_%sDropout(0.5)_%slayer(FL=%s)_epochs(%s)" % (
     livello,
@@ -64,7 +63,7 @@ model_filename = "%s_model_%s_LR%s_batch%s_%sDropout(0.5)_%slayer(FL=%s)_epochs(
     epochs)
 
 if os.path.isdir(save_model_dir) is False:
-    os.chdir(root_dir)
+    os.chdir(source_dir)
     os.makedirs(save_model_dir)
     print("\nCARTELLA SALVATAGGIO MODELLO CREATA")
 

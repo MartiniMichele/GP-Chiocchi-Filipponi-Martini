@@ -85,8 +85,8 @@ class CGR:
         plt.scatter(r[:, 0], r[:, 1])
 
         source_path = Path(__file__).resolve()
-        source_dir = source_path.parent
-        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/.16S_ENA/16S_ENA_Dataset/CGR_RNA" + str(counter) + ".png"
+        source_dir = Path(source_path.parent.parent.parent)
+        path = Path(str(source_dir) + "/.16S_ENA/16S_ENA_Dataset/CGR_RNA" + str(counter) + ".png")
         plt.savefig(path)
         plt.close(fig)
         #plt.show()

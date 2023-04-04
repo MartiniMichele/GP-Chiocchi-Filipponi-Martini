@@ -9,9 +9,9 @@ import os
 from pathlib import Path
 
 source_path = Path(__file__).resolve()
-source_dir = source_path.parent
-path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_complete/notnull_phylum/join_notnull_phylum.xlsx"
-path_results = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/16S_complete/notnull_phylum/noduplicates/join_notnull_noduplicates_phylum.xlsx"
+source_dir = Path(source_path.parent.parent.parent)
+path = Path(str(source_dir) + "/16S_complete/notnull_phylum/join_notnull_phylum.xlsx")
+path_results = Path(str(source_dir) + "/16S_complete/notnull_phylum/noduplicates/join_notnull_noduplicates_phylum.xlsx")
 
 # Caricamento del file 5s.xlsx
 df = pd.read_excel(path)

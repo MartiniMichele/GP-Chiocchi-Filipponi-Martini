@@ -1,11 +1,18 @@
+import pandas as pd
+import os
+from pathlib import Path
 '''
 Questo script consente di contare il numero di occorrenze per un certo dato, contenuto in una colonna di un file excel.
 Salva poi il risultato in un altro file.
 '''
 
-import pandas as pd
+source_path = Path(__file__).resolve()
+source_dir = Path(source_path.parent.parent.parent)
 
-df = pd.read_excel("C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/tRNA_csv/tRNA_csv/Results/NCBI.xlsx")
+excel_path = Path(str(source_dir) + "/tRNA_csv/tRNA_csv/Results/NCBI.xlsx")
+result_excel_path = Path(str(source_dir) + "/tRNA_csv/tRNA_csv/Tassonomie_numero_occorrenze/NCBI_superkingdom_occorrenze.xlsx")
+
+df = pd.read_excel(excel_path)
 colonna = df['Taxonomy.NCBI.superkingdom']
 occorrenze = {}
 
@@ -18,6 +25,4 @@ for stringa in colonna:
 
 risultati_df = pd.DataFrame({'Taxonomy.NCBI.superkingdom': list(occorrenze.keys()), 'n° occorrenze': list(occorrenze.values())})
 
-risultati_df.to_excel(
-    "C:/Users/fchio/Desktop/GroupProject/GP-Chiocchi-Filipponi-Martini/tRNA_csv/tRNA_csv/Tassonomie_numero_occorrenze/NCBI_superkingdom_occorrenze.xlsx",
-                      index=False)
+risultati_df.to_excel(result_excel_path, index=False)

@@ -6,32 +6,18 @@ import random
 import glob
 
 source_path = Path(__file__).resolve()
-source_dir = source_path.parent
+source_dir = Path(source_path.parent.parent.parent)
 
-# cartelle relative al Superkingdom SILVA
-'''
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Superkingdom_SILVA_tRNA/"
-dataset_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/"
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/train/"
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/valid/"
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SK_DATASET/test/"
-'''
+database = "Superkingdom"
+livello = "16S"
+completo = "%s_%s" % (database, livello)
+sottoclasse = "Eukaryota"
 
-# cartelle relative al Phylum SILVA
-'''
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_tRNA/"
-dataset_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/"
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/train/"
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/valid/"
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/DATASET/test/"
-'''
-
-data_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/Phylum_SILVA_Split_tRNA/Eukaryota/"
-dataset_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/"
-train_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Eukaryota/train/"
-valid_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Eukaryota/valid/"
-test_dir = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/Classification/SPLIT_DATASET/Eukaryota/test/"
-
+dataset_dir = Path(str(source_dir) + "/Classification/%s_DATASET/" % completo.upper())
+data_dir = Path(str(source_dir) + "/Classification/IMMAGINI DA DIVIDERE/%s/%s" % (completo, sottoclasse))
+train_dir = Path(str(source_dir) + "/Classification/IMMAGINI DA DIVIDERE/%s/%s/train/" % (completo, sottoclasse))
+valid_dir = Path(str(source_dir) + "/Classification/IMMAGINI DA DIVIDERE/%s/%s/valid/" % (completo, sottoclasse))
+test_dir = Path(str(source_dir) + "/Classification/IMMAGINI DA DIVIDERE/%s/%s/test/" % (completo, sottoclasse))
 
 filelist = os.listdir(data_dir)
 sub_dir_path = []

@@ -1,4 +1,4 @@
-import CGRepresentation
+from scripts.cgr import CGRepresentation
 import os
 from pathlib import Path
 from Bio.Seq import MutableSeq
@@ -16,10 +16,9 @@ class CGRHandler:
 
         # Folder Path
         source_path = Path(__file__).resolve()
-        source_dir = source_path.parent
-        path = os.path.abspath(os.path.join(source_dir, os.pardir)) + "/.16S_ENA/Fasta_16S_ENA/"
+        source_dir = Path(source_path.parent.parent.parent)
+        path = Path(str(source_dir) + "/.16S_ENA/Fasta_16S_ENA/")
         counter = 1
-
         # Change the directory
         os.chdir(path)
 
@@ -121,7 +120,7 @@ class CGRHandler:
     def generate_dataset(self, counter):
 
         bio_sequence = self.filter_sequence(self.sequence)
-        #print("SEQUENZA UTILIZZATA: " + bio_sequence)
+        print("SEQUENZA UTILIZZATA: " + bio_sequence)
         print("COUNTER: " + str(counter))
         drawer = CGRepresentation.CGR(bio_sequence, self.CGR_type, self.outer_representation, self.rna_2structure)
         drawer.representation()

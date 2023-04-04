@@ -1,11 +1,10 @@
-from CGRepresentation import CGR
+from scripts.cgr.CGRepresentation import CGR
 from scipy.fftpack import fft
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-import cmath 
 from scipy.cluster.hierarchy import dendrogram, linkage
-from numpy import linalg as LA
+
 
 class DFTree:
     def __init__(self, seqs, names, seq_type = "DNA", outer_representation = False, rna_2structure = False):
