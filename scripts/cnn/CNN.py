@@ -7,357 +7,207 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, History
 import os
 from pathlib import Path
-
-source_path = Path(__file__).resolve()
-source_dir = Path(source_path.parent.parent.parent)
-img_width, img_height = 150, 150
-
-'''
-ISTRUZIONI PER L'USO:
-- inserire il nome del database da utilizzare !!!Attenzione agli "_"!!! (NEW_16S_, NEW_tRNA_, 23S, SK_DATASET....)
-- inserire il livello, in caso non fosse presente lasciare vuoto (BACTERIA, ALLPHYLUM, SUPERKINGDOM....)
-- scegliere gli iperparametri per la rete
-- N.B. il modello viene salvato in automatico nella cartella CNN_models, questo file può pesare molto.
-  Ricordarsi di eliminarlo se non è utile
-- alla fine del processo di training vengono generati dei grafici che saranno salvati nella cartella Grafici
-- una volta finito il training sara effettuata una evaluation sul test e saranno visualizzati i risultati sulla console.
-  Verranno inoltre generati dei grafici che saranno salvati nella suddetta cartella
-'''
-# variabili di comodo per creazione e salvataggio del modello
-database = "NEW_16S_"
-livello = "ALLPHYLUM"
-completo = "%s%s" % (database, livello)
-#variabile di comodo in caso si vogliano lasciare gli stessi parametri ma ripetere il training senza riscrivere il modello salvato
-model_mk = 1
-batch_size = 32
-epochs = 30
-#numero di filtri del primo layer
-fl_filter = 32
-#numero di unità del layer di output
-ol_units = 12
-#numero di layer di dropout(0.5)
-n_dropout = 1
-#numero di layer totali della rete
-n_layer = 3
-#learning rate
-lr = 1e-4
-
-# cartelle urilizzate per l'esperimento
-data_dir = Path(str(source_dir) + "/Classification/%s_DATASET/" % completo)
-train_dir = Path(str(source_dir) + "/Classification/%s_DATASET/train/" % completo)
-valid_dir = Path(str(source_dir) + "/Classification/%s_DATASET/valid/" % completo)
-test_dir = Path(str(source_dir) + "/Classification/%s_DATASET/test/" % completo)
-
-models_dir = Path(str(source_dir) + "/CNN_models/")
-save_model_dir = Path(str(source_dir) + "/CNN_models/%s/" % livello)
-graph_dir = Path(str(source_dir) + "/Grafici/")
-save_fig_dir = Path(str(source_dir) + "/Grafici/%s" % livello)
-
-model_filename = "%s_model_%s_LR%s_batch%s_%sDropout(0.5)_%slayer(FL=%s)_epochs(%s)" % (
-    livello,
-    model_mk, lr,
-    batch_size,
-    n_dropout,
-    n_layer,
-    fl_filter,
-    epochs)
-
-if os.path.isdir(save_model_dir) is False:
-    os.chdir(source_dir)
-    os.makedirs(save_model_dir)
-    print("\nCARTELLA SALVATAGGIO MODELLO CREATA")
-
-model_save_name = os.path.abspath(os.path.join(save_model_dir, model_filename + ".h5"))
-
-print("\n" + model_save_name)
-
-'''
-crea i callback per la funzione fit, i callback implementati sono:
-early_stopping: ferma prematuramente il training se non ci sono progressi per un numero specifico di epoche(patience)
-reduce_lr: riduce il learning rate in caso di appiattimento della curva di apprendimento
-model_checkpoint: salva automaticamente il modello con il valore indicato migliore(monitor)
-'''
+from scripts.cnn.ResultPlotter import ResultPlotter
 
 
-def create_callbacks():
-    early_stopping = EarlyStopping(patience=6, monitor='val_loss', verbose=1)
+class CNN:
+    """
+    variabili per ottenere la root folder del progetto
+    """
+    dataset = ""
+    model_mk = 0
+    batch_size = 0
+    epochs = 0
+    fl_filter = 0
+    ol_units = 0
+    n_dropout = 0
+    drop_value = 0
+    n_layer = 0
+    lr = 0
+    patience = 0
 
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', min_lr=0.001,
-                                  patience=5, mode='min',
-                                  verbose=1)
+    def __init__(self, dataset, model_mk, batch_size, epochs, fl_filter, ol_units, n_dropout, drop_value, n_layer, lr,
+                 patience):
+        # variabili per creazione e salvataggio del modello
+        self.dataset = dataset
+        self.model_mk = model_mk
+        self.batch_size = batch_size
+        self.epochs = epochs
+        self.fl_filter = fl_filter
+        self.ol_units = ol_units
+        self.n_dropout = n_dropout
+        self.drop_value = drop_value
+        self.n_layer = n_layer
+        self.lr = lr
+        self.patience = patience
 
-    model_checkpoint = ModelCheckpoint(monitor='val_loss',
-                                       filepath=model_save_name,
-                                       save_best_only=True,
-                                       verbose=1)
-    hist = History()
+        # cartelle utili per la CNN
+        self.model_filename = ""
+        self.train_dir = ""
+        self.valid_dir = ""
+        self.test_dir = ""
 
-    callbacks = [
-        early_stopping,
-        reduce_lr,
-        model_checkpoint,
-        hist
-    ]
+    source_path = Path(__file__).resolve()
+    source_dir = Path(source_path.parent.parent.parent)
+    # indica la dimensione delle immagini date in input alla CNN
+    img_width, img_height = 150, 150
 
-    return callbacks
+    def init_dirs(self):
+        # cartelle urilizzate per l'esperimento
+        data_dir = Path(str(self.source_dir) + "/Classification/%s_DATASET/" % self.dataset)
+        self.train_dir = Path(str(self.source_dir) + "/Classification/%s_DATASET/train/" % self.dataset)
+        self.valid_dir = Path(str(self.source_dir) + "/Classification/%s_DATASET/valid/" % self.dataset)
+        self.test_dir = Path(str(self.source_dir) + "/Classification/%s_DATASET/test/" % self.dataset)
 
+        models_dir = Path(str(self.source_dir) + "/CNN_models/")
+        save_model_dir = Path(str(self.source_dir) + "/CNN_models/%s/" % self.dataset)
 
-'''
-il modello della rete neurale
-'''
-last_n_filter = fl_filter
-model = Sequential()
-for i in range(n_layer):
-    if i == 0:
-        model.add(Conv2D(filters=last_n_filter, activation='relu', kernel_size=(3, 3), input_shape=(img_width, img_height, 3)))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-    else:
-        last_n_filter = last_n_filter * 2
-        model.add(Conv2D(filters=last_n_filter, activation='relu', kernel_size=(3, 3), input_shape=(img_width, img_height, 3)))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model_filename = "%s_model_%s_LR%s_batch%s_%sDropout(0.5)_%slayer(FL=%s)_epochs(%s)" % (
+            self.dataset,
+            self.model_mk,
+            self.lr,
+            self.batch_size,
+            self.n_dropout,
+            self.n_layer,
+            self.fl_filter,
+            self.epochs)
+        self.create_model_dir(save_model_dir, self.model_filename)
 
-model.add(Flatten())
-model.add(Dense(units=last_n_filter * 4, activation='relu', ))
+    def create_model_dir(self, save_model_dir, model_filename):
+        if os.path.isdir(save_model_dir) is False:
+            os.chdir(self.source_dir)
+            os.makedirs(save_model_dir)
+            print("\nCARTELLA SALVATAGGIO MODELLO CREATA")
 
-for i in range(n_dropout):
-    model.add(Dropout(0.5))
+        self.model_save_name = os.path.abspath(os.path.join(save_model_dir, model_filename + ".h5"))
 
-model.add(Dense(units=ol_units, activation='softmax'))
+    '''
+    crea i callback per la funzione fit, i callback implementati sono:
+    early_stopping: ferma prematuramente il training se non ci sono progressi per un numero specifico di epoche(patience)
+    reduce_lr: riduce il learning rate in caso di appiattimento della curva di apprendimento
+    model_checkpoint: salva automaticamente il modello con il valore indicato migliore(monitor)
+    '''
 
+    def create_callbacks(self):
+        early_stopping = EarlyStopping(patience=self.patience, monitor='val_loss', verbose=1)
 
-'''
-MODELLO FUNZIONANTE:
+        reduce_lr = ReduceLROnPlateau(monitor='val_loss', min_lr=0.001,
+                                      patience=self.patience, mode='min',
+                                      verbose=1)
 
+        model_checkpoint = ModelCheckpoint(monitor='val_loss',
+                                           filepath=self.model_save_name,
+                                           save_best_only=True,
+                                           verbose=1)
+        hist = History()
 
-model.add(Conv2D(filters=32, activation='relu', kernel_size=(3, 3), input_shape=(img_width, img_height, 3)))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(filters=64, activation='relu', kernel_size=(3, 3)))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(filters=128, activation='relu', kernel_size=(3, 3)))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Flatten())
-model.add(Dense(units=512, activation='relu', ))
-model.add(Dropout(0.5))
-model.add(Dense(units=8, activation='softmax'))
-'''
+        callbacks = [
+            early_stopping,
+            reduce_lr,
+            model_checkpoint,
+            hist
+        ]
 
-model.summary()
+        return callbacks
 
-model.compile(loss='categorical_crossentropy', optimizer=RMSprop(learning_rate=lr),
-              metrics=['accuracy', 'Precision', 'Recall', 'AUC'])
+    '''
+    crea il modello della rete neurale
+    '''
 
-'''
-i batch per train/valid/test sono creati con l'ausilio di ImageDataGenerator che permette di applicare
-delle modifiche alle immagini. Nel nostro casto per il train viene applicata la data augmentation
-'''
-train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
-validation_datagen = ImageDataGenerator(rescale=1. / 255)
-test_datagen = ImageDataGenerator(rescale=1. / 255)
+    def create_model(self):
+        last_n_filter = self.fl_filter
+        model = Sequential()
+        for i in range(self.n_layer):
+            if i == 0:
+                model.add(Conv2D(filters=last_n_filter, activation='relu', kernel_size=(3, 3),
+                                 input_shape=(self.img_width, self.img_height, 3)))
+                model.add(MaxPooling2D(pool_size=(2, 2)))
+            else:
+                last_n_filter = last_n_filter * 2
+                model.add(Conv2D(filters=last_n_filter, activation='relu', kernel_size=(3, 3),
+                                 input_shape=(self.img_width, self.img_height, 3)))
+                model.add(MaxPooling2D(pool_size=(2, 2)))
 
-train_generator = train_datagen.flow_from_directory(train_dir, target_size=(img_width, img_height),
-                                                    batch_size=batch_size, class_mode='categorical')
+        model.add(Flatten())
+        model.add(Dense(units=last_n_filter * 4, activation='relu', ))
 
-validation_generator = validation_datagen.flow_from_directory(valid_dir, target_size=(img_width, img_height),
-                                                              batch_size=batch_size, class_mode='categorical')
+        for i in range(self.n_dropout):
+            model.add(Dropout(self.drop_value))
 
-test_generator = test_datagen.flow_from_directory(test_dir, target_size=(img_width, img_height),
-                                                  batch_size=batch_size, class_mode='categorical')
+        model.add(Dense(units=self.ol_units, activation='softmax'))
 
-'''
-metodo fit per istruire la rete neurale, i risultati vengono salvati nella variabile history
-per eventuali utilizzi futuri(i.e. grafici)
-'''
-history = model.fit(train_generator, steps_per_epoch=train_generator.n // batch_size, epochs=epochs,
-                    validation_data=validation_generator,
-                    validation_steps=validation_generator.n // batch_size,
-                    callbacks=create_callbacks())
+        model.summary()
 
-'''
-variabili per la creazione dei grafici, estratte dalla storia del metodo fit
-'''
-actual_epochs = len(history.history['loss'])
-train_loss = history.history['loss']
-val_loss = history.history['val_loss']
-train_acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
-train_precision = history.history['precision']
-val_precision = history.history['val_precision']
-train_recall = history.history['recall']
-val_recall = history.history['val_recall']
-train_auc = history.history['auc']
-val_auc = history.history['val_auc']
-xc = range(actual_epochs)
+        model.compile(loss='categorical_crossentropy', optimizer=RMSprop(learning_rate=self.lr),
+                      metrics=['accuracy', 'Precision', 'Recall', 'AUC'])
 
+        return model
 
-'''
-Controlla se la cartella del superkingdom del modello esiste e se necessario la crea
-'''
-if os.path.isdir(save_fig_dir) is False:
-    os.chdir(graph_dir)
-    os.makedirs(livello)
-    print("CARTELLA SUPERKINGDOM SALVATAGGIO GRAFICI CREATA")
-'''
-Controlla se la cartella dei grafici del modello esiste e se necessario la crea
-'''
-if os.path.isdir(os.path.abspath(os.path.join(save_fig_dir, "GRAPHS_" + model_filename))) is False:
-    os.chdir(save_fig_dir)
-    os.makedirs("GRAPHS_" + model_filename)
-    print("CARTELLA SALVATAGGIO GRAFICI CREATA")
+    '''
+    i batch per train/valid/test sono creati con l'ausilio di ImageDataGenerator che permette di applicare
+    delle modifiche alle immagini. Nel nostro casto per il train viene applicata la data augmentation
+    '''
 
-'''
-aggiorna la variabile del salvataggio dei grafici e si sposta in quella cartella
-'''
-save_fig_dir = os.path.abspath(os.path.abspath(os.path.join(save_fig_dir, "GRAPHS_" + model_filename)))
-os.chdir(save_fig_dir)
+    def datagen(self):
+        train_datagen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
+        validation_datagen = ImageDataGenerator(rescale=1. / 255)
+        test_datagen = ImageDataGenerator(rescale=1. / 255)
 
+        train_generator = train_datagen.flow_from_directory(self.train_dir,
+                                                            target_size=(self.img_width, self.img_height),
+                                                            batch_size=self.batch_size, class_mode='categorical')
 
-'''
-Crea il grafico della loss per train e validation
-'''
-plt.figure()
-plt.grid()
-plt.plot(train_loss)
-plt.plot(val_loss)
-plt.xlabel("epoche")
-plt.ylabel("loss")
-plt.title("LOSS GRAPH")
-plt.legend(["train", "val"], loc="upper left")
-plt.savefig("LOSS_GRAPH.png")
-plt.show()
+        validation_generator = validation_datagen.flow_from_directory(self.valid_dir,
+                                                                      target_size=(self.img_width, self.img_height),
+                                                                      batch_size=self.batch_size,
+                                                                      class_mode='categorical')
 
-'''
-Crea il grafico della accuracy per train e validation
-'''
-plt.grid()
-plt.plot(train_acc)
-plt.plot(val_acc)
-plt.xlabel("epoche")
-plt.ylabel("accuracy")
-plt.title("ACCURACY GRAPH")
-plt.legend(["train", "val"], loc="upper left")
-plt.savefig("ACCURACY_GRAPH.png")
-plt.show()
+        test_generator = test_datagen.flow_from_directory(self.test_dir, target_size=(self.img_width, self.img_height),
+                                                          batch_size=self.batch_size, class_mode='categorical')
+        result_list = [train_generator, validation_generator, test_generator]
+        return result_list
 
-'''
-Crea il grafico della precision per train e validation
-'''
-plt.grid()
-plt.plot(train_precision)
-plt.plot(val_precision)
-plt.xlabel("epoche")
-plt.ylabel("precision")
-plt.title("PRECISION GRAPH")
-plt.legend(["train", "val"], loc="upper left")
-plt.savefig("PRECISION_GRAPH.png")
-plt.show()
+    '''
+    metodo fit per istruire la rete neurale, i risultati vengono salvati nella variabile history
+    per eventuali utilizzi futuri(i.e. grafici)
+    '''
 
-'''
-Crea il grafico del recall per train e validation
-'''
-plt.grid()
-plt.plot(train_recall)
-plt.plot(val_recall)
-plt.xlabel("epoche")
-plt.ylabel("recall")
-plt.title("RECALL GRAPH")
-plt.legend(["train", "val"], loc="upper left")
-plt.savefig("RECALL_GRAPH.png")
-plt.show()
+    def train(self, model, train_generator, validation_generator):
+        history = model.fit(train_generator, steps_per_epoch=train_generator.n // self.batch_size, epochs=self.epochs,
+                            validation_data=validation_generator,
+                            validation_steps=validation_generator.n // self.batch_size,
+                            callbacks=self.create_callbacks())
 
-'''
-Crea il grafico dell'AUC per train e validation
-'''
-plt.grid()
-plt.plot(train_auc)
-plt.plot(val_auc)
-plt.xlabel("epoche")
-plt.ylabel("auc")
-plt.title("AUC GRAPH")
-plt.legend(["train", "val"], loc="upper left")
-plt.savefig("AUC_GRAPH.png")
-plt.show()
+        return history
 
-'''
-al termine del training viene chiamato il metodo evaluate sul batch di test per verificare il training della rete
-vengono stampate le metriche e viene calcolata la metrica F1
-'''
+    def draw_graphs(self, history):
+        result_plotter = ResultPlotter(history, self.dataset, self.model_filename)
 
-score = model.evaluate(test_generator, verbose=2)
-test_loss = score[0]
-test_accuracy = score[1]
-test_precision = score[2]
-test_recall = score[3]
-test_auc = score[4]
+        result_plotter.loss_graph()
+        result_plotter.accuracy_graph()
+        result_plotter.precision_graph()
+        result_plotter.recall_graph()
+        result_plotter.auroc_graph()
 
-print('\nRISULTATO TEST %s (BATCH: %s, EPOCHE: %s, STRATI: %s, FIRST LAYER: %s, ) %s' % (model_mk, batch_size, actual_epochs, n_layer, fl_filter, completo))
-print('\nTest LOSS: ', str(test_loss))
-print('\nTest ACCURACY: ', str(test_accuracy))
-print('\nTest PRECISION: ', str(test_precision))
-print('\nTest RECALL: ', str(test_recall))
-print('\nTest AUC: ', str(test_auc))
+    def create_and_train(self):
+        model = self.create_model()
+        datagen_list = self.datagen()
+        self.train(model, datagen_list[0], datagen_list[1])
 
+    '''
+    al termine del training viene chiamato il metodo evaluate sul batch di test per verificare il training della rete
+    vengono stampate le metriche e viene calcolata la metrica F1
+    '''
 
-'''
-Crea il grafico della loss per il test
-'''
-plt.grid()
-plt.scatter([1], test_loss, zorder=5)
-plt.ylabel("loss")
-plt.title("LOSS GRAPH")
-plt.savefig("LOSS(test)_GRAPH.png")
-plt.show()
+    def test_evaluate(self, model, test_generator):
+        score = model.evaluate(test_generator, verbose=2)
+        return score
 
-'''
-Crea il grafico della accuracy per il test
-'''
-plt.grid()
-plt.scatter([1], test_accuracy, zorder=5)
-plt.ylabel("accuracy")
-plt.title("ACCURACY GRAPH")
-plt.savefig("ACCURACY(test)_GRAPH.png")
-plt.show()
-
-'''
-Crea il grafico della precision per il test
-'''
-plt.grid()
-plt.scatter([1], test_precision, zorder=5)
-plt.ylabel("precision")
-plt.title("PRECISION GRAPH")
-plt.savefig("PRECISION(test)_GRAPH.png")
-plt.show()
-
-'''
-Crea il grafico del recall per il test
-'''
-plt.grid()
-plt.scatter([1], test_recall, zorder=5)
-plt.ylabel("recall")
-plt.title("RECALL GRAPH")
-plt.savefig("RECALL(test)_GRAPH.png")
-plt.show()
-
-'''
-Crea il grafico dell'AUC per il test
-'''
-plt.grid()
-plt.scatter([1], test_auc, zorder=5)
-plt.ylabel("auc metric")
-plt.title("AUC GRAPH")
-plt.savefig("AUC(test)_GRAPH.png")
-plt.show()
-
-
-test_f1 = 2 * (score[3] * score[2]) / (score[3] + score[2])
-print('\nTest F1: ', str(test_f1))
-'''
-Crea il grafico dell'F1 per il test
-'''
-plt.grid()
-plt.scatter([1], test_f1, zorder=5)
-plt.ylabel("F1 metric")
-plt.title("F1 GRAPH")
-plt.savefig("F1(test)_GRAPH.png")
-plt.show()
-
-
+    def draw_test_graphs(self, score):
+        result_plotter = ResultPlotter(score, self.dataset, self.model_filename)
+        result_plotter.test_loss_graph()
+        result_plotter.test_accuracy_graph()
+        result_plotter.test_precision_graph()
+        result_plotter.test_recall_graph()
+        result_plotter.test_auroc_graph()
+        result_plotter.test_f1_graph()

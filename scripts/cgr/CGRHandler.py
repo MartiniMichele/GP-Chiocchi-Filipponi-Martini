@@ -6,18 +6,19 @@ from Bio.Seq import MutableSeq
 
 class CGRHandler:
     # in futuro cambiare il costruttore per poter scegliere le modalità della CGR
-    def __init__(self, CGR_type, outer_representation, rna_2structure):
+    def __init__(self, CGR_type, outer_representation, rna_2structure, data_dir):
         self.CGR_type = CGR_type
         self.outer_representation = outer_representation
         self.rna_2structure = rna_2structure
         self.sequence = None
+        self.data_dir = data_dir
 
     def read_files(self):
 
         # Folder Path
         source_path = Path(__file__).resolve()
         source_dir = Path(source_path.parent.parent.parent)
-        path = Path(str(source_dir) + "/.16S_ENA/Fasta_16S_ENA/")
+        path = Path(str(source_dir) + "FASTA/%s" % self.data_dir)
         counter = 1
         # Change the directory
         os.chdir(path)
@@ -127,5 +128,5 @@ class CGRHandler:
         drawer.plot(counter)
 
 
-istanza_prova = CGRHandler("RNA", False, False)
+istanza_prova = CGRHandler("RNA", False, False, "16S_fasta")
 CGRHandler.read_files(istanza_prova)
