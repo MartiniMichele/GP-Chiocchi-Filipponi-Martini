@@ -11,7 +11,7 @@ class ResultPlotter:
         self.save_fig_dir = ""
 
         '''
-        variabili per la creazione dei grafici, estratte dalla storia del metodo fit
+        variabili comuni per la creazione dei grafici, estratte dalla storia del metodo fit
         '''
         self.actual_epochs = len(history.history['loss'])
         self.xc = range(self.actual_epochs)
@@ -19,28 +19,45 @@ class ResultPlotter:
     source_path = Path(__file__).resolve()
     source_dir = Path(source_path.parent.parent.parent)
 
+    '''
+    Inizializza le cartelle dove salvare i grafici
+    '''
+
     def init_graph_dir(self):
 
         graph_dir = Path(str(self.source_dir) + "/Grafici/")
-        save_fig_dir = Path(str(self.source_dir) + "/Grafici/%s" % self.dataset)
+        self.save_fig_dir = Path(str(self.source_dir) + "/Grafici/%s" % self.dataset)
 
-        if os.path.isdir(save_fig_dir) is False:
-            os.makedirs(save_fig_dir)
-            print("CARTELLA SUPERKINGDOM SALVATAGGIO GRAFICI CREATA")
+        if os.path.isdir(self.save_fig_dir) is False:
+            os.makedirs(self.save_fig_dir)
+            print("SOTTOCARTELLA SALVATAGGIO GRAFICI CREATA")
 
         '''
         Controlla se la cartella dei grafici del modello esiste e se necessario la crea
         '''
-        if os.path.isdir(os.path.abspath(os.path.join(save_fig_dir, "GRAPHS_" + self.model_filename))) is False:
-            os.chdir(save_fig_dir)
+        if os.path.isdir(os.path.abspath(os.path.join(self.save_fig_dir, "GRAPHS_" + self.model_filename))) is False:
+            os.chdir(self.save_fig_dir)
             os.makedirs("GRAPHS_" + self.model_filename)
             print("CARTELLA SALVATAGGIO GRAFICI CREATA")
 
         '''
         aggiorna la variabile del salvataggio dei grafici e si sposta in quella cartella
         '''
-        self.save_fig_dir = os.path.abspath(os.path.abspath(os.path.join(save_fig_dir, "GRAPHS_" + self.model_filename)))
-        os.chdir(save_fig_dir)
+        self.save_fig_dir = os.path.abspath(
+            os.path.abspath(os.path.join(self.save_fig_dir, "GRAPHS_" + self.model_filename)))
+        os.chdir(self.save_fig_dir)
+
+    '''
+    Disegna tutti i grafici relativi a test e validation e li salva su disco
+    '''
+
+    def drawall_graphs(self):
+        self.init_graph_dir()
+        self.loss_graph()
+        self.accuracy_graph()
+        self.precision_graph()
+        self.recall_graph()
+        self.auroc_graph()
 
     '''
     Crea il grafico della loss per train e validation
@@ -49,6 +66,7 @@ class ResultPlotter:
     def loss_graph(self):
         train_loss = self.history['loss']
         val_loss = self.history['val_loss']
+        os.chdir(self.save_fig_dir)
 
         plt.figure()
         plt.grid()
@@ -68,6 +86,7 @@ class ResultPlotter:
     def accuracy_graph(self):
         train_acc = self.history['accuracy']
         val_acc = self.history['val_accuracy']
+        os.chdir(self.save_fig_dir)
 
         plt.grid()
         plt.plot(train_acc)
@@ -82,9 +101,11 @@ class ResultPlotter:
     '''
     Crea il grafico della precision per train e validation
     '''
+
     def precision_graph(self):
         train_precision = self.history['precision']
         val_precision = self.history['val_precision']
+        os.chdir(self.save_fig_dir)
 
         plt.grid()
         plt.plot(train_precision)
@@ -99,9 +120,11 @@ class ResultPlotter:
     '''
     Crea il grafico del recall per train e validation
     '''
+
     def recall_graph(self):
         train_recall = self.history['recall']
         val_recall = self.history['val_recall']
+        os.chdir(self.save_fig_dir)
 
         plt.grid()
         plt.plot(train_recall)
@@ -116,9 +139,12 @@ class ResultPlotter:
     '''
     Crea il grafico dell'AUC per train e validation
     '''
+
     def auroc_graph(self):
         train_auc = self.history['auc']
         val_auc = self.history['val_auc']
+        os.chdir(self.save_fig_dir)
+
         plt.grid()
         plt.plot(train_auc)
         plt.plot(val_auc)
@@ -130,10 +156,26 @@ class ResultPlotter:
         plt.show()
 
     '''
+    Disegna tutti i grafici del test e li salva su disco
+    '''
+
+    def drawall_test_graphs(self):
+        self.init_graph_dir()
+        self.test_loss_graph()
+        self.test_accuracy_graph()
+        self.test_precision_graph()
+        self.test_recall_graph()
+        self.test_auroc_graph()
+        self.test_f1_graph()
+
+    '''
     Crea il grafico della loss per il test
     '''
+
     def test_loss_graph(self):
         test_loss = self.history[0]
+        os.chdir(self.save_fig_dir)
+
         plt.grid()
         plt.scatter([1], test_loss, zorder=5)
         plt.ylabel("loss")
@@ -144,8 +186,11 @@ class ResultPlotter:
     '''
     Crea il grafico della accuracy per il test
     '''
+
     def test_accuracy_graph(self):
         test_accuracy = self.history[1]
+        os.chdir(self.save_fig_dir)
+
         plt.grid()
         plt.scatter([1], test_accuracy, zorder=5)
         plt.ylabel("accuracy")
@@ -156,8 +201,11 @@ class ResultPlotter:
     '''
     Crea il grafico della precision per il test
     '''
+
     def test_precision_graph(self):
         test_precision = self.history[2]
+        os.chdir(self.save_fig_dir)
+
         plt.grid()
         plt.scatter([1], test_precision, zorder=5)
         plt.ylabel("precision")
@@ -168,8 +216,11 @@ class ResultPlotter:
     '''
     Crea il grafico del recall per il test
     '''
+
     def test_recall_graph(self):
         test_recall = self.history[3]
+        os.chdir(self.save_fig_dir)
+
         plt.grid()
         plt.scatter([1], test_recall, zorder=5)
         plt.ylabel("recall")
@@ -180,8 +231,11 @@ class ResultPlotter:
     '''
     Crea il grafico dell'AUC per il test
     '''
+
     def test_auroc_graph(self):
         test_auroc = self.history[4]
+        os.chdir(self.save_fig_dir)
+
         plt.grid()
         plt.scatter([1], test_auroc, zorder=5)
         plt.ylabel("auc metric")
@@ -192,8 +246,11 @@ class ResultPlotter:
     '''
     Crea il grafico dell'F1 per il test
     '''
+
     def test_f1_graph(self):
         test_f1 = 2 * (self.history[3] * self.history[2]) / (self.history[3] + self.history[2])
+        os.chdir(self.save_fig_dir)
+
         plt.grid()
         plt.scatter([1], test_f1, zorder=5)
         plt.ylabel("F1 metric")

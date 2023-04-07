@@ -3,6 +3,11 @@ import os
 from pathlib import Path
 from Bio.Seq import MutableSeq
 
+'''
+Questa classe ha il compito di gestire la generazione di immagini CGR tramite l'utilizzo del codice della libreria
+adkwazar/CGR
+'''
+
 
 class CGRHandler:
     # in futuro cambiare il costruttore per poter scegliere le modalità della CGR
@@ -12,6 +17,10 @@ class CGRHandler:
         self.rna_2structure = rna_2structure
         self.sequence = None
         self.data_dir = data_dir
+
+    '''
+    Questo metodo scorre i file fasta nella cartella selezionata e ne estrae la sequenza
+    '''
 
     def read_files(self):
 
@@ -30,7 +39,6 @@ class CGRHandler:
                 line = f.readline()
                 self.sequence = line.replace("\n", "")
 
-
         # iterate through all file
         for file in os.listdir():
             # Check whether file is in text format or not
@@ -42,6 +50,10 @@ class CGRHandler:
                 print(file_path)
                 self.generate_dataset(counter)
                 counter += 1
+
+    '''
+    Questo metodo filtra le sequenze rimuovendo i caratteri che causano ambiguità
+    '''
 
     def filter_sequence(self, sequence):
 
@@ -98,6 +110,10 @@ class CGRHandler:
 
         return filtered_sequence
 
+    '''
+    metodo di supporto a filter_sequence, ha il compito di contare il numero di caratteri ambigui presenti nella sequenza
+    '''
+
     def count_char(self, sequence):
         tmp_sequence = MutableSeq(sequence)
         char_count = 0
@@ -118,6 +134,10 @@ class CGRHandler:
 
         return char_count
 
+    '''Questo metodo ha il compito di generare le immagini CGR sfruttando la libreria adkwazar/CGR e filter_sequence 
+    per filtrare le sequenze
+    '''
+
     def generate_dataset(self, counter):
 
         bio_sequence = self.filter_sequence(self.sequence)
@@ -126,7 +146,3 @@ class CGRHandler:
         drawer = CGRepresentation.CGR(bio_sequence, self.CGR_type, self.outer_representation, self.rna_2structure)
         drawer.representation()
         drawer.plot(counter)
-
-
-istanza_prova = CGRHandler("RNA", False, False, "16S_fasta")
-CGRHandler.read_files(istanza_prova)

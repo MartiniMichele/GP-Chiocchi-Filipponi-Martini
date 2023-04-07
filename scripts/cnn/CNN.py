@@ -11,20 +11,6 @@ from scripts.cnn.ResultPlotter import ResultPlotter
 
 
 class CNN:
-    """
-    variabili per ottenere la root folder del progetto
-    """
-    dataset = ""
-    model_mk = 0
-    batch_size = 0
-    epochs = 0
-    fl_filter = 0
-    ol_units = 0
-    n_dropout = 0
-    drop_value = 0
-    n_layer = 0
-    lr = 0
-    patience = 0
 
     def __init__(self, dataset, model_mk, batch_size, epochs, fl_filter, ol_units, n_dropout, drop_value, n_layer, lr,
                  patience):
@@ -52,12 +38,15 @@ class CNN:
     # indica la dimensione delle immagini date in input alla CNN
     img_width, img_height = 150, 150
 
+    '''
+    Inizializza le cartelle utili alla CNN
+    '''
     def init_dirs(self):
         # cartelle urilizzate per l'esperimento
-        data_dir = Path(str(self.source_dir) + "/Classification/%s_DATASET/" % self.dataset)
-        self.train_dir = Path(str(self.source_dir) + "/Classification/%s_DATASET/train/" % self.dataset)
-        self.valid_dir = Path(str(self.source_dir) + "/Classification/%s_DATASET/valid/" % self.dataset)
-        self.test_dir = Path(str(self.source_dir) + "/Classification/%s_DATASET/test/" % self.dataset)
+        data_dir = Path(str(self.source_dir) + "/Classification/DATASET/%s/" % self.dataset)
+        self.train_dir = Path(str(self.source_dir) + "/Classification/DATASET/%s/train/" % self.dataset)
+        self.valid_dir = Path(str(self.source_dir) + "/Classification/DATASET/%s/valid/" % self.dataset)
+        self.test_dir = Path(str(self.source_dir) + "/Classification/DATASET/%s/test/" % self.dataset)
 
         models_dir = Path(str(self.source_dir) + "/CNN_models/")
         save_model_dir = Path(str(self.source_dir) + "/CNN_models/%s/" % self.dataset)
@@ -73,6 +62,9 @@ class CNN:
             self.epochs)
         self.create_model_dir(save_model_dir, self.model_filename)
 
+    '''
+    Crea la cartella dove salvare il modello di CNN
+    '''
     def create_model_dir(self, save_model_dir, model_filename):
         if os.path.isdir(save_model_dir) is False:
             os.chdir(self.source_dir)
@@ -141,11 +133,12 @@ class CNN:
         model.compile(loss='categorical_crossentropy', optimizer=RMSprop(learning_rate=self.lr),
                       metrics=['accuracy', 'Precision', 'Recall', 'AUC'])
 
+        self.init_dirs()
         return model
 
     '''
     i batch per train/valid/test sono creati con l'ausilio di ImageDataGenerator che permette di applicare
-    delle modifiche alle immagini. Nel nostro casto per il train viene applicata la data augmentation
+    delle modifiche alle immagini. Nel nostro caso per il train viene applicata la data augmentation
     '''
 
     def datagen(self):
@@ -180,15 +173,6 @@ class CNN:
 
         return history
 
-    def draw_graphs(self, history):
-        result_plotter = ResultPlotter(history, self.dataset, self.model_filename)
-
-        result_plotter.loss_graph()
-        result_plotter.accuracy_graph()
-        result_plotter.precision_graph()
-        result_plotter.recall_graph()
-        result_plotter.auroc_graph()
-
     def create_and_train(self):
         model = self.create_model()
         datagen_list = self.datagen()
@@ -202,12 +186,3 @@ class CNN:
     def test_evaluate(self, model, test_generator):
         score = model.evaluate(test_generator, verbose=2)
         return score
-
-    def draw_test_graphs(self, score):
-        result_plotter = ResultPlotter(score, self.dataset, self.model_filename)
-        result_plotter.test_loss_graph()
-        result_plotter.test_accuracy_graph()
-        result_plotter.test_precision_graph()
-        result_plotter.test_recall_graph()
-        result_plotter.test_auroc_graph()
-        result_plotter.test_f1_graph()
