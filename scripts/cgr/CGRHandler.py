@@ -10,13 +10,32 @@ adkwazar/CGR
 
 
 class CGRHandler:
+    source_path = Path(__file__).resolve()
+    source_dir = Path(source_path.parent.parent.parent)
+
     # in futuro cambiare il costruttore per poter scegliere le modalità della CGR
-    def __init__(self, CGR_type, outer_representation, rna_2structure, data_dir):
+    def __init__(self, CGR_type, outer_representation, rna_2structure, data_dir, save_dir):
         self.CGR_type = CGR_type
         self.outer_representation = outer_representation
         self.rna_2structure = rna_2structure
         self.sequence = None
+        self.source = data_dir
         self.data_dir = data_dir
+        self.save_dir = save_dir
+
+
+    '''
+    Inizializza le cartelle utili alla CNN
+    '''
+    def init_dirs(self):
+        # cartelle urilizzate per l'esperimento
+        self.data_dir = Path(str(self.source_dir) + "/FASTA/%s/" % self.data_dir)
+        image_dir = Path(str(self.source_dir) + "/IMMAGINI_CGR")
+        self.save_dir = Path(str(image_dir) + "/%s" % self.save_dir)
+        #self.save_dir = Path(str(self.source_dir) + "/IMMAGINI_CGR/%s" % self.save_dir)
+        os.chdir(image_dir)
+        if os.path.isdir(self.save_dir) is False:
+            os.makedirs(self.save_dir)
 
     '''
     Questo metodo scorre i file fasta nella cartella selezionata e ne estrae la sequenza
@@ -24,10 +43,12 @@ class CGRHandler:
 
     def read_files(self):
 
+        self.init_dirs()
+
         # Folder Path
         source_path = Path(__file__).resolve()
         source_dir = Path(source_path.parent.parent.parent)
-        path = Path(str(source_dir) + "FASTA/%s" % self.data_dir)
+        path = Path(str(source_dir) + "/FASTA/%s" % self.source)
         counter = 1
         # Change the directory
         os.chdir(path)
@@ -145,4 +166,5 @@ class CGRHandler:
         print("COUNTER: " + str(counter))
         drawer = CGRepresentation.CGR(bio_sequence, self.CGR_type, self.outer_representation, self.rna_2structure)
         drawer.representation()
-        drawer.plot(counter)
+        path = Path(str(self.save_dir) + "/CGR_RNA_" + str(counter) + ".png")
+        drawer.plot(counter, path)

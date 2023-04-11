@@ -79,14 +79,13 @@ class CGR:
         f.close()
 
 
-    def plot(self, counter):
+    def plot(self, counter, path):
         r = CGR.representation(self)
         fig = plt.figure(figsize=(6, 6))
         plt.scatter(r[:, 0], r[:, 1])
 
         source_path = Path(__file__).resolve()
         source_dir = Path(source_path.parent.parent.parent)
-        path = Path(str(source_dir) + "/.16S_ENA/16S_ENA_Dataset/CGR_RNA" + str(counter) + ".png")
         plt.savefig(path)
         plt.close(fig)
         #plt.show()

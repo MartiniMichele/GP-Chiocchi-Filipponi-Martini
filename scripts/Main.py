@@ -41,8 +41,11 @@ Metodo di supporto a main, contiene il codice per la scelta della generazione de
 def imgen_case():
     fasta_directory = input(
         "\nINSERIRE IL NOME DELLA CARTELLA IN CUI SI TROVANO I FILE FASTA (sottocartella di "
-        "'FASTA')")
-    handler_istance = CGRHandler("RNA", False, False, fasta_directory)
+        "'FASTA')").lower()
+    images_directory = input(
+        "\nINSERIRE IL NOME DELLA CARTELLA IN CUI SI SALVARE LE IMMAGINI (sottocartella di "
+        "'IMMAGINI CGR')").lower()
+    handler_istance = CGRHandler("RNA", False, False, fasta_directory, images_directory)
     handler_istance.read_files()
 
 
